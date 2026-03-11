@@ -1,0 +1,44 @@
+{
+  "paper_info": {
+    "title": "",
+    "authors": [],
+    "year": "",
+    "language": "",
+    "field": "",
+    "keywords": []
+  },
+  "language_detect_result": {
+    "detected_language": "",
+    "confidence": "",
+    "reason": ""
+  },
+  "one_sentence_summary": "",
+  "interview_useful": [
+    {
+      "label": "",
+      "core_content": "",
+      "reason_for_interview": "",
+      "typical_questions": [],
+      "oral_answer_sample": ""
+    }
+  ],
+  "review_outline": {
+    "interview_outline": []
+  },
+  "extra": {
+    "key_points": [],
+    "mechanisms": [],
+    "policy_implications": [],
+    "limitations": []
+  },
+  "english_support": {
+    "key_terms": [
+      {
+        "english": "",
+        "chinese": "",
+        "explanation": ""
+      }
+    ],
+    "oral_sentence_patterns": []
+  }
+}

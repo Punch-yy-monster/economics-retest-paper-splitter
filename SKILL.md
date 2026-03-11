@@ -141,6 +141,38 @@ Keep field names exactly as defined in [references/output-schema.json](reference
 Populate arrays with only useful entries. Do not pad with empty objects.
 Use empty strings or empty arrays only when a field truly cannot be supported by the source.
 
+## Downloadable JSON Files
+
+When the user asks for downloadable JSON, saved JSON, separate JSON files, or clearly intends to reuse the result outside the chat, write files in the current workspace after generating the analysis.
+
+Use this directory convention:
+
+- `output/economics-retest-paper-splitter/<paper-slug>/full.json`
+- `output/economics-retest-paper-splitter/<paper-slug>/interview.json`
+- `output/economics-retest-paper-splitter/<paper-slug>/written_exam.json`
+
+Build `<paper-slug>` from the paper title:
+
+- lowercase English if possible
+- replace spaces and punctuation with hyphens
+- keep it short and stable
+- if the title is unavailable, use `untitled-paper`
+
+File responsibilities:
+
+- `full.json`: complete combined output using [references/output-schema.json](references/output-schema.json)
+- `interview.json`: interview-only downloadable JSON using [references/interview-output-schema.json](references/interview-output-schema.json)
+- `written_exam.json`: written-exam-only downloadable JSON using [references/written-output-schema.json](references/written-output-schema.json)
+
+If the user explicitly asks only for one of the two channels, still prefer saving the requested file and mention the saved path.
+If the user asks to analyze in chat only and does not ask to save, you may return JSON without creating files.
+
+After writing files:
+
+- mention the saved file paths in the response
+- keep the JSON itself valid
+- do not add extra commentary inside the JSON files
+
 ## Field Guidance
 
 ### `one_sentence_summary`
@@ -172,6 +204,36 @@ Include:
 - key terms with Chinese explanation
 - oral sentence patterns for interviews
 - written sentence patterns for written exams
+
+### Split-file content
+
+For `interview.json`, keep only fields useful for oral preparation and file reuse:
+
+- `paper_info`
+- `language_detect_result`
+- `one_sentence_summary`
+- `interview_useful`
+- `review_outline.interview_outline`
+- `extra.key_points`
+- `extra.mechanisms`
+- `extra.policy_implications`
+- `extra.limitations`
+- `english_support.key_terms`
+- `english_support.oral_sentence_patterns`
+
+For `written_exam.json`, keep only fields useful for written preparation and file reuse:
+
+- `paper_info`
+- `language_detect_result`
+- `one_sentence_summary`
+- `written_exam_useful`
+- `review_outline.written_outline`
+- `extra.key_points`
+- `extra.mechanisms`
+- `extra.policy_implications`
+- `extra.limitations`
+- `english_support.key_terms`
+- `english_support.written_sentence_patterns`
 
 ## Style
 

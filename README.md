@@ -40,6 +40,7 @@ It is designed for use cases where reading a paper is not enough and the real bo
 - Rewrites overlapping knowledge into oral and written versions separately
 - Adds likely supervisor follow-up questions
 - Produces strict JSON for reuse in tools, notes, or datasets
+- Can save downloadable `full.json`, `interview.json`, and `written_exam.json`
 
 ## Quick Start
 
@@ -60,6 +61,12 @@ Example prompt:
 
 ```text
 Use $economics-retest-paper-splitter to turn this economics paper into interview-ready and written-exam-ready JSON materials.
+```
+
+If you want downloadable files instead of chat-only output:
+
+```text
+Use $economics-retest-paper-splitter to analyze this paper and save downloadable full.json, interview.json, and written_exam.json in the workspace.
 ```
 
 ## Workflow
@@ -101,6 +108,7 @@ flowchart LR
 - 对追问更友好: 输出导师可能追问和参考口头回答
 - 对背诵更友好: 输出规范化结论、机制链条、高频术语和可背诵知识块
 - 严格 JSON 输出: 方便继续喂给别的工具、保存到知识库或批量处理
+- 可落盘为可下载文件: `full.json`、`interview.json`、`written_exam.json`
 
 ## 适用对象
 
@@ -270,6 +278,26 @@ Use $economics-retest-paper-splitter to split this economics paper into intervie
 - `english_support`
 
 完整结构见 [references/output-schema.json](references/output-schema.json)。
+
+## Downloadable Files
+
+当你明确要求保存结果时，这个技能可以在当前工作区生成 3 个可下载 JSON 文件：
+
+- `output/economics-retest-paper-splitter/<paper-slug>/full.json`
+- `output/economics-retest-paper-splitter/<paper-slug>/interview.json`
+- `output/economics-retest-paper-splitter/<paper-slug>/written_exam.json`
+
+对应 schema：
+
+- 完整版：[references/output-schema.json](references/output-schema.json)
+- 面试版：[references/interview-output-schema.json](references/interview-output-schema.json)
+- 笔试版：[references/written-output-schema.json](references/written-output-schema.json)
+
+推荐直接这样提：
+
+```text
+使用 $economics-retest-paper-splitter 分析这篇文献，并把结果保存为可下载的 full.json、interview.json 和 written_exam.json。
+```
 
 ## 输出示意
 
