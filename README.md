@@ -1,5 +1,10 @@
 # 经济学复试文献双通道拆解器
 
+[![MIT License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![Codex Skill](https://img.shields.io/badge/Codex-Skill-blue)](./SKILL.md)
+[![Output JSON](https://img.shields.io/badge/output-Strict%20JSON-orange)](./references/output-schema.json)
+[![Economics](https://img.shields.io/badge/domain-Economics-red)](./README.md)
+
 把一篇经济学文献，直接拆成两套真正适合复试的材料：
 
 - 面试能说出口的版本
