@@ -19,10 +19,11 @@ The script is the source of truth for stable file generation, schema validation,
 Required Python package:
 
 ```bash
-python3 -m pip install --user pypdf
+python3 -m pip install --user pypdf openpyxl
 ```
 
 `pypdf` is required for PDF extraction.
+`openpyxl` is required for Excel export.
 Poppler is not required for the main workflow.
 
 ## Gatekeeping
@@ -164,7 +165,7 @@ Keep field names exactly as defined in [references/output-schema.json](reference
 Populate arrays with only useful entries. Do not pad with empty objects.
 Use empty strings or empty arrays only when a field truly cannot be supported by the source.
 
-## Downloadable JSON Files
+## Downloadable Files
 
 When the user asks for downloadable JSON, saved JSON, separate JSON files, or clearly intends to reuse the result outside the chat, write files in the current workspace after generating the analysis.
 
@@ -194,6 +195,7 @@ Use this directory convention:
 - `output/economics-retest-paper-splitter/<paper-slug>/full.json`
 - `output/economics-retest-paper-splitter/<paper-slug>/interview.json`
 - `output/economics-retest-paper-splitter/<paper-slug>/written_exam.json`
+- `output/economics-retest-paper-splitter/<paper-slug>/retest_pack.xlsx`
 
 Build `<paper-slug>` from the paper title:
 
@@ -207,6 +209,7 @@ File responsibilities:
 - `full.json`: complete combined output using [references/output-schema.json](references/output-schema.json)
 - `interview.json`: interview-only downloadable JSON using [references/interview-output-schema.json](references/interview-output-schema.json)
 - `written_exam.json`: written-exam-only downloadable JSON using [references/written-output-schema.json](references/written-output-schema.json)
+- `retest_pack.xlsx`: downloadable workbook with `Overview`, `Interview`, `Written`, `Overlap`, `Terms`, and `Run Report` sheets
 - `run-report.json`: debug-only run metadata including input type, generation time, language label, fallback slug usage, and abstract length
 
 If the user explicitly asks only for one of the two channels, still prefer saving the requested file and mention the saved path.

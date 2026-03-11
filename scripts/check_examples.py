@@ -10,6 +10,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from openpyxl import load_workbook
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "generate_retest_json.py"
@@ -90,16 +92,19 @@ def run_success_fixture(example_name: str) -> None:
             raise RuntimeError(f"{example_name}: command failed: {result.stdout or result.stderr}")
 
         paths = [Path(line.strip()) for line in result.stdout.splitlines() if line.strip()]
-        if len(paths) != 3:
-            raise RuntimeError(f"{example_name}: expected 3 output paths, got {paths!r}")
+        if len(paths) != 4:
+            raise RuntimeError(f"{example_name}: expected 4 output paths, got {paths!r}")
 
         generated_dir = paths[0].parent
         full_path = generated_dir / "full.json"
         interview_path = generated_dir / "interview.json"
         written_path = generated_dir / "written_exam.json"
+        excel_path = generated_dir / "retest_pack.xlsx"
         report_path = generated_dir / "run-report.json"
         if not report_path.exists():
             raise RuntimeError(f"{example_name}: run-report.json not generated")
+        if not excel_path.exists():
+            raise RuntimeError(f"{example_name}: retest_pack.xlsx not generated")
 
         full = load_json(full_path)
         interview = load_json(interview_path)
@@ -113,6 +118,9 @@ def run_success_fixture(example_name: str) -> None:
             raise RuntimeError(f"{example_name}: unexpected input_type {report['input_type']}")
         if report["abstract_length"] <= 0:
             raise RuntimeError(f"{example_name}: abstract_length should be positive")
+        workbook = load_workbook(excel_path)
+        if workbook.sheetnames != ["Overview", "Interview", "Written", "Overlap", "Terms", "Run Report"]:
+            raise RuntimeError(f"{example_name}: unexpected Excel sheet names {workbook.sheetnames!r}")
 
         for filename in ("full.json", "interview.json", "written_exam.json"):
             assert_snapshot(generated_dir / filename, expected_dir / filename)

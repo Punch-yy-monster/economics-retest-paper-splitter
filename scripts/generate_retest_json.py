@@ -12,6 +12,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Alignment, Font, PatternFill
 from pypdf import PdfReader
 
 
@@ -34,6 +36,7 @@ WRITTEN_SCHEMA_PATH = ROOT / "references" / "written-output-schema.json"
 
 ALLOWED_LANGUAGES = {"中文文献", "英文文献", "中英混合文献"}
 OUTPUT_FILENAMES = ("full.json", "interview.json", "written_exam.json")
+EXCEL_FILENAME = "retest_pack.xlsx"
 
 FIELD_KEYWORDS = {
     "数字经济学": [
@@ -1394,6 +1397,166 @@ def write_json(path: Path, data: dict[str, Any], schema_path: Path) -> None:
     validate_against_schema(reloaded, schema)
 
 
+def style_sheet(sheet) -> None:
+    header_fill = PatternFill(fill_type="solid", fgColor="DCE6F1")
+    title_fill = PatternFill(fill_type="solid", fgColor="1F4E78")
+    section_fill = PatternFill(fill_type="solid", fgColor="F4B183")
+
+    for cell in sheet[1]:
+        cell.font = Font(bold=True, color="FFFFFF")
+        cell.fill = title_fill
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    if sheet.max_row >= 2:
+        for cell in sheet[2]:
+            cell.font = Font(bold=True)
+            cell.fill = header_fill
+            cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
+    for row in sheet.iter_rows(min_row=3):
+        for cell in row:
+            cell.alignment = Alignment(vertical="top", wrap_text=True)
+
+    for column_cells in sheet.columns:
+        max_length = 0
+        column_letter = column_cells[0].column_letter
+        for cell in column_cells:
+            value = "" if cell.value is None else str(cell.value)
+            max_length = max(max_length, len(value))
+        sheet.column_dimensions[column_letter].width = min(max(max_length + 2, 14), 48)
+
+    if sheet.max_row >= 1:
+        sheet.freeze_panes = "A3"
+
+    for row in sheet.iter_rows(min_row=1, max_row=sheet.max_row):
+        if row[0].value in {"Interview", "Written", "Overlap", "Terms", "Run Report"}:
+            for cell in row:
+                cell.font = Font(bold=True, color="000000")
+                cell.fill = section_fill
+
+
+def append_table(sheet, title: str, headers: list[str], rows: list[list[str]]) -> None:
+    sheet.append([title])
+    sheet.append(headers)
+    for row in rows:
+        sheet.append(row)
+    sheet.append([])
+
+
+def create_excel_workbook(
+    output_path: Path,
+    full: dict[str, Any],
+    interview: dict[str, Any],
+    written: dict[str, Any],
+    run_report: dict[str, Any],
+) -> None:
+    workbook = Workbook()
+
+    overview = workbook.active
+    overview.title = "Overview"
+    overview.append(["Overview"])
+    overview.append(["Field", "Value"])
+    info = full["paper_info"]
+    overview_rows = [
+        ["Title", info["title"]],
+        ["Authors", "；".join(info["authors"]) if info["authors"] else ""],
+        ["Year", info["year"]],
+        ["Language", info["language"]],
+        ["Field", info["field"]],
+        ["Keywords", "；".join(info["keywords"])],
+        ["Summary", full["one_sentence_summary"]],
+        ["Schema Version", full["meta"]["schema_version"]],
+    ]
+    for row in overview_rows:
+        overview.append(row)
+    style_sheet(overview)
+
+    interview_sheet = workbook.create_sheet("Interview")
+    append_table(
+        interview_sheet,
+        "Interview",
+        ["Label", "Core Content", "Reason", "Typical Questions", "Oral Answer Sample"],
+        [
+            [
+                item["label"],
+                item["core_content"],
+                item["reason_for_interview"],
+                "；".join(item["typical_questions"]),
+                item["oral_answer_sample"],
+            ]
+            for item in interview["interview_useful"]
+        ],
+    )
+    style_sheet(interview_sheet)
+
+    written_sheet = workbook.create_sheet("Written")
+    append_table(
+        written_sheet,
+        "Written",
+        ["Label", "Core Content", "Reason", "Question Types", "Exam Expression"],
+        [
+            [
+                item["label"],
+                item["core_content"],
+                item["reason_for_written_exam"],
+                "；".join(item["question_types"]),
+                item["exam_expression"],
+            ]
+            for item in written["written_exam_useful"]
+        ],
+    )
+    style_sheet(written_sheet)
+
+    overlap_sheet = workbook.create_sheet("Overlap")
+    append_table(
+        overlap_sheet,
+        "Overlap",
+        ["Topic", "Interview Version", "Written Version"],
+        [
+            [item["topic"], item["interview_version"], item["written_version"]]
+            for item in full["overlap_but_rewritten"]
+        ],
+    )
+    style_sheet(overlap_sheet)
+
+    terms_sheet = workbook.create_sheet("Terms")
+    append_table(
+        terms_sheet,
+        "Terms",
+        ["English", "Chinese", "Explanation"],
+        [
+            [item["english"], item["chinese"], item["explanation"]]
+            for item in full["english_support"]["key_terms"]
+        ],
+    )
+    append_table(
+        terms_sheet,
+        "Oral Patterns",
+        ["Pattern"],
+        [[item] for item in full["english_support"]["oral_sentence_patterns"]],
+    )
+    append_table(
+        terms_sheet,
+        "Written Patterns",
+        ["Pattern"],
+        [[item] for item in full["english_support"]["written_sentence_patterns"]],
+    )
+    style_sheet(terms_sheet)
+
+    report_sheet = workbook.create_sheet("Run Report")
+    report_sheet.append(["Run Report"])
+    report_sheet.append(["Field", "Value"])
+    for key, value in run_report.items():
+        report_sheet.append([key, json.dumps(value, ensure_ascii=False) if isinstance(value, (list, dict)) else value])
+    style_sheet(report_sheet)
+
+    workbook.save(output_path)
+    reloaded = load_workbook(output_path)
+    expected_sheets = {"Overview", "Interview", "Written", "Overlap", "Terms", "Run Report"}
+    if set(reloaded.sheetnames) != expected_sheets:
+        raise ValueError(f"Excel workbook sheets mismatch: {reloaded.sheetnames}")
+
+
 def build_run_report(source: SourceData, metadata: PaperMetadata, sections: PaperSections, used_fallback_slug: bool) -> dict[str, Any]:
     return {
         "input_type": source.input_type,
@@ -1422,18 +1585,21 @@ def main() -> int:
         output_root = args.output_dir.resolve() if args.output_dir else Path.cwd() / "output" / "economics-retest-paper-splitter"
         output_dir = output_root / slug
         output_dir.mkdir(parents=True, exist_ok=True)
+        run_report = build_run_report(source, metadata, sections, used_fallback_slug)
 
         write_json(output_dir / "full.json", full, FULL_SCHEMA_PATH)
         write_json(output_dir / "interview.json", interview, INTERVIEW_SCHEMA_PATH)
         write_json(output_dir / "written_exam.json", written, WRITTEN_SCHEMA_PATH)
         (output_dir / "run-report.json").write_text(
-            json.dumps(build_run_report(source, metadata, sections, used_fallback_slug), ensure_ascii=False, indent=2) + "\n",
+            json.dumps(run_report, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
+        create_excel_workbook(output_dir / EXCEL_FILENAME, full, interview, written, run_report)
 
         print(output_dir / "full.json")
         print(output_dir / "interview.json")
         print(output_dir / "written_exam.json")
+        print(output_dir / EXCEL_FILENAME)
         return 0
     except UserFacingError as exc:
         print(str(exc))
