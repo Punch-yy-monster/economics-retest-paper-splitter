@@ -1,0 +1,68 @@
+{
+  "paper_info": {
+    "title": "",
+    "authors": [],
+    "year": "",
+    "language": "",
+    "field": "",
+    "keywords": []
+  },
+  "language_detect_result": {
+    "detected_language": "",
+    "confidence": "",
+    "reason": ""
+  },
+  "one_sentence_summary": "",
+  "interview_useful": [
+    {
+      "label": "",
+      "core_content": "",
+      "reason_for_interview": "",
+      "typical_questions": [],
+      "oral_answer_sample": ""
+    }
+  ],
+  "written_exam_useful": [
+    {
+      "label": "",
+      "core_content": "",
+      "reason_for_written_exam": "",
+      "question_types": [],
+      "exam_expression": ""
+    }
+  ],
+  "overlap_but_rewritten": [
+    {
+      "topic": "",
+      "interview_version": "",
+      "written_version": ""
+    }
+  ],
+  "low_priority": [
+    {
+      "label": "",
+      "reason": ""
+    }
+  ],
+  "review_outline": {
+    "interview_outline": [],
+    "written_outline": []
+  },
+  "extra": {
+    "key_points": [],
+    "mechanisms": [],
+    "policy_implications": [],
+    "limitations": []
+  },
+  "english_support": {
+    "key_terms": [
+      {
+        "english": "",
+        "chinese": "",
+        "explanation": ""
+      }
+    ],
+    "oral_sentence_patterns": [],
+    "written_sentence_patterns": []
+  }
+}

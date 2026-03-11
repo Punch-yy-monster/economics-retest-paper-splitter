@@ -1,0 +1,4 @@
+interface:
+  display_name: "经济学复试文献双通道拆解器"
+  short_description: "将经济学文献拆成适合复试面试与笔试的双通道JSON材料"
+  default_prompt: "使用 $economics-retest-paper-splitter 将这篇经济学文献拆成适合复试面试和笔试的两套 JSON 材料。"
