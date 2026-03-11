@@ -12,6 +12,7 @@ Detect language first, refuse to analyze when material is insufficient, and retu
 
 For saved or downloadable outputs, use the bundled script at `scripts/generate_retest_json.py` as the primary path.
 Do not hand-write JSON files when the script can produce them.
+The script is the source of truth for stable file generation, schema validation, and split-file export.
 
 ## Dependencies
 
@@ -77,6 +78,14 @@ Infer or extract:
 - possible extension directions
 
 Do not mirror the paper's section headings. Reorganize everything by retest usefulness.
+Internally prefer a paper-type-aware route:
+
+- `review`
+- `empirical`
+- `theoretical`
+- `policy`
+
+Use the paper type to adjust emphasis in the two channels rather than repeating one generic template.
 
 ### 3. Force the dual-channel split
 
@@ -171,6 +180,15 @@ For raw text:
 python3 scripts/generate_retest_json.py --input-text "Title: ... Abstract: ..."
 ```
 
+Useful stable options:
+
+```bash
+python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf --output-dir /path/to/output
+python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf --slug custom-paper-id
+python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf --language 英文文献
+python3 scripts/generate_retest_json.py --input-text "Title: ... Abstract: ..." --stdout-json
+```
+
 Use this directory convention:
 
 - `output/economics-retest-paper-splitter/<paper-slug>/full.json`
@@ -189,6 +207,7 @@ File responsibilities:
 - `full.json`: complete combined output using [references/output-schema.json](references/output-schema.json)
 - `interview.json`: interview-only downloadable JSON using [references/interview-output-schema.json](references/interview-output-schema.json)
 - `written_exam.json`: written-exam-only downloadable JSON using [references/written-output-schema.json](references/written-output-schema.json)
+- `run-report.json`: debug-only run metadata including input type, generation time, language label, fallback slug usage, and abstract length
 
 If the user explicitly asks only for one of the two channels, still prefer saving the requested file and mention the saved path.
 If the user asks to analyze in chat only and does not ask to save, you may return JSON without creating files.
@@ -199,6 +218,11 @@ After writing files:
 - keep the JSON itself valid
 - do not add extra commentary inside the JSON files
 - treat the script output as the source of truth for saved files
+- rely on the script's exit codes for failure handling:
+  - `1`: 信息不足
+  - `2`: 语言无法判断
+  - `3`: PDF 抽取失败
+  - `4`: schema 校验失败
 
 ## Field Guidance
 

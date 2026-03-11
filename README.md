@@ -37,10 +37,12 @@ It is designed for use cases where reading a paper is not enough and the real bo
 
 - Dual-channel split: `interview_useful` and `written_exam_useful`
 - Not a generic summary tool
+- Paper-type-aware output: `review`, `empirical`, `theoretical`, `policy`
 - Rewrites overlapping knowledge into oral and written versions separately
 - Adds likely supervisor follow-up questions
 - Produces strict JSON for reuse in tools, notes, or datasets
 - Can save downloadable `full.json`, `interview.json`, and `written_exam.json`
+- Writes a lightweight `run-report.json` for debugging and regression checks
 
 ## Quick Start
 
@@ -79,6 +81,15 @@ If you want a deterministic local workflow, run the bundled script directly:
 
 ```bash
 python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf
+```
+
+Useful CLI options:
+
+```bash
+python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf --output-dir /path/to/output
+python3 scripts/generate_retest_json.py --input-text "Title: ... Abstract: ..." --stdout-json
+python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf --slug custom-paper-id
+python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf --language 英文文献
 ```
 
 ## Workflow
@@ -323,12 +334,20 @@ python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf
 python3 scripts/generate_retest_json.py --input-text "Title: ... Abstract: ..."
 ```
 
+附加调试文件：
+
+- `run-report.json`
+
+其中会记录输入类型、生成时间、语言标签、是否使用回退 slug 以及抽取到的摘要长度，方便排查抽取问题。
+
 ## Regression Examples
 
-仓库内置了两组最小回归样例：
+仓库内置了两组成功样例和两组失败样例：
 
 - `examples/english-digital-economics`
 - `examples/chinese-digital-economics`
+- `examples/failure-title-only-english`
+- `examples/failure-title-only-chinese`
 
 运行回归检查：
 
@@ -336,7 +355,12 @@ python3 scripts/generate_retest_json.py --input-text "Title: ... Abstract: ..."
 python3 scripts/check_examples.py
 ```
 
-这会重新生成样例输出并与 `expected/*.json` 对比，用来检查字段结构、文件命名和输出稳定性是否被后续改动破坏。
+这会执行两层检查：
+
+- 结构断言：字段、拆分逻辑、CLI 行为、错误码
+- 快照比对：重新生成样例输出并与 `expected/*.json` 对比
+
+另外，`examples/failure-low-text-pdf` 记录了低文本 PDF 的预期失败行为说明。
 
 ## 输出示意
 
@@ -393,7 +417,10 @@ python3 scripts/check_examples.py
 │   └── check_examples.py
 ├── examples/
 │   ├── english-digital-economics/
-│   └── chinese-digital-economics/
+│   ├── chinese-digital-economics/
+│   ├── failure-title-only-english/
+│   ├── failure-title-only-chinese/
+│   └── failure-low-text-pdf/
 └── references/
     ├── output-schema.json
     ├── interview-output-schema.json
