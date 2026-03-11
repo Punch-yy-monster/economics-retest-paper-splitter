@@ -1,3 +1,5 @@
 .DS_Store
 economics-retest-paper-splitter/
 output/
+__pycache__/
+*.pyc
