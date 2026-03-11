@@ -5,6 +5,8 @@
 [![Output JSON](https://img.shields.io/badge/output-Strict%20JSON-orange)](./references/output-schema.json)
 [![Economics](https://img.shields.io/badge/domain-Economics-red)](./README.md)
 
+> Turn one economics paper into two different retest outputs: an interview-ready version and a written-exam-ready version, both in strict JSON.
+
 把一篇经济学文献，直接拆成两套真正适合复试的材料：
 
 - 面试能说出口的版本
@@ -14,6 +16,49 @@
 它的目标很明确: 帮中国高校经济学研究生复试考生，把文献阅读结果转成更接近得分场景的输出。
 
 如果你也觉得“文献看懂了，但不会讲、不会写、不会背”是复试准备里最耗时间的一环，这个技能就是为这个问题做的。
+
+## English Overview
+
+This repository contains a Codex skill for Chinese economics graduate retest preparation.
+Instead of generating a generic paper summary, it forces one paper into two different outputs:
+
+- an oral, interview-ready version
+- a compact, written-exam-ready version
+
+It is designed for use cases where reading a paper is not enough and the real bottleneck is turning that reading into:
+
+- answers you can explain out loud
+- answers you can write on an exam sheet
+- concepts you can memorize and reuse
+
+## Quick Highlights
+
+- Dual-channel split: `interview_useful` and `written_exam_useful`
+- Not a generic summary tool
+- Rewrites overlapping knowledge into oral and written versions separately
+- Adds likely supervisor follow-up questions
+- Produces strict JSON for reuse in tools, notes, or datasets
+
+## Quick Start
+
+Install the skill into `~/.codex/skills/`:
+
+```bash
+mkdir -p ~/.codex/skills
+ln -s /path/to/economics-retest-paper-splitter ~/.codex/skills/economics-retest-paper-splitter
+```
+
+Invoke it in Codex with:
+
+```text
+$economics-retest-paper-splitter
+```
+
+Example prompt:
+
+```text
+Use $economics-retest-paper-splitter to turn this economics paper into interview-ready and written-exam-ready JSON materials.
+```
 
 ## 为什么这个技能值得用
 
@@ -113,6 +158,12 @@ $economics-retest-paper-splitter
 
 ```text
 使用 $economics-retest-paper-splitter 拆解这篇数字经济文献，输出适合复试面试和笔试的 JSON。
+```
+
+英文也可以直接这样触发：
+
+```text
+Use $economics-retest-paper-splitter to split this economics paper into interview-ready and written-exam-ready JSON.
 ```
 
 ## 输入要求
