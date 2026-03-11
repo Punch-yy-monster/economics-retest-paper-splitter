@@ -5,6 +5,8 @@
 [![Output JSON](https://img.shields.io/badge/output-Strict%20JSON-orange)](./references/output-schema.json)
 [![Economics](https://img.shields.io/badge/domain-Economics-red)](./README.md)
 
+![封面图](./assets/cover.svg)
+
 > Turn one economics paper into two different retest outputs: an interview-ready version and a written-exam-ready version, both in strict JSON.
 
 把一篇经济学文献，直接拆成两套真正适合复试的材料：
