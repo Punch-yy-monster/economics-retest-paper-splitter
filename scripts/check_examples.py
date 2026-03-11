@@ -92,19 +92,25 @@ def run_success_fixture(example_name: str) -> None:
             raise RuntimeError(f"{example_name}: command failed: {result.stdout or result.stderr}")
 
         paths = [Path(line.strip()) for line in result.stdout.splitlines() if line.strip()]
-        if len(paths) != 4:
-            raise RuntimeError(f"{example_name}: expected 4 output paths, got {paths!r}")
+        if len(paths) != 6:
+            raise RuntimeError(f"{example_name}: expected 6 output paths, got {paths!r}")
 
         generated_dir = paths[0].parent
         full_path = generated_dir / "full.json"
         interview_path = generated_dir / "interview.json"
         written_path = generated_dir / "written_exam.json"
         excel_path = generated_dir / "retest_pack.xlsx"
+        memorize_excel_path = generated_dir / "retest_pack_memorize.xlsx"
+        print_excel_path = generated_dir / "retest_pack_print.xlsx"
         report_path = generated_dir / "run-report.json"
         if not report_path.exists():
             raise RuntimeError(f"{example_name}: run-report.json not generated")
         if not excel_path.exists():
             raise RuntimeError(f"{example_name}: retest_pack.xlsx not generated")
+        if not memorize_excel_path.exists():
+            raise RuntimeError(f"{example_name}: retest_pack_memorize.xlsx not generated")
+        if not print_excel_path.exists():
+            raise RuntimeError(f"{example_name}: retest_pack_print.xlsx not generated")
 
         full = load_json(full_path)
         interview = load_json(interview_path)
@@ -118,9 +124,10 @@ def run_success_fixture(example_name: str) -> None:
             raise RuntimeError(f"{example_name}: unexpected input_type {report['input_type']}")
         if report["abstract_length"] <= 0:
             raise RuntimeError(f"{example_name}: abstract_length should be positive")
-        workbook = load_workbook(excel_path)
-        if workbook.sheetnames != ["Overview", "Interview", "Written", "Overlap", "Terms", "Run Report"]:
-            raise RuntimeError(f"{example_name}: unexpected Excel sheet names {workbook.sheetnames!r}")
+        for workbook_path in (excel_path, memorize_excel_path, print_excel_path):
+            workbook = load_workbook(workbook_path)
+            if workbook.sheetnames != ["Overview", "Interview", "Written", "Overlap", "Terms", "Run Report"]:
+                raise RuntimeError(f"{example_name}: unexpected Excel sheet names {workbook.sheetnames!r}")
 
         for filename in ("full.json", "interview.json", "written_exam.json"):
             assert_snapshot(generated_dir / filename, expected_dir / filename)

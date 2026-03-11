@@ -196,6 +196,8 @@ Use this directory convention:
 - `output/economics-retest-paper-splitter/<paper-slug>/interview.json`
 - `output/economics-retest-paper-splitter/<paper-slug>/written_exam.json`
 - `output/economics-retest-paper-splitter/<paper-slug>/retest_pack.xlsx`
+- `output/economics-retest-paper-splitter/<paper-slug>/retest_pack_memorize.xlsx`
+- `output/economics-retest-paper-splitter/<paper-slug>/retest_pack_print.xlsx`
 
 Build `<paper-slug>` from the paper title:
 
@@ -209,7 +211,9 @@ File responsibilities:
 - `full.json`: complete combined output using [references/output-schema.json](references/output-schema.json)
 - `interview.json`: interview-only downloadable JSON using [references/interview-output-schema.json](references/interview-output-schema.json)
 - `written_exam.json`: written-exam-only downloadable JSON using [references/written-output-schema.json](references/written-output-schema.json)
-- `retest_pack.xlsx`: downloadable workbook with `Overview`, `Interview`, `Written`, `Overlap`, `Terms`, and `Run Report` sheets
+- `retest_pack.xlsx`: default downloadable workbook with `Overview`, `Interview`, `Written`, `Overlap`, `Terms`, and `Run Report` sheets
+- `retest_pack_memorize.xlsx`: memorize-focused workbook with stronger visual highlights for review
+- `retest_pack_print.xlsx`: print-focused workbook with grayscale styling and print layout settings
 - `run-report.json`: debug-only run metadata including input type, generation time, language label, fallback slug usage, and abstract length
 
 If the user explicitly asks only for one of the two channels, still prefer saving the requested file and mention the saved path.

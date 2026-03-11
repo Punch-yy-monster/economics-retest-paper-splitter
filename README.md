@@ -42,7 +42,7 @@ It is designed for use cases where reading a paper is not enough and the real bo
 - Adds likely supervisor follow-up questions
 - Produces strict JSON for reuse in tools, notes, or datasets
 - Can save downloadable `full.json`, `interview.json`, and `written_exam.json`
-- Can save a downloadable `retest_pack.xlsx`
+- Can save downloadable `retest_pack.xlsx`, `retest_pack_memorize.xlsx`, and `retest_pack_print.xlsx`
 - Writes a lightweight `run-report.json` for debugging and regression checks
 
 ## Quick Start
@@ -75,7 +75,7 @@ Use $economics-retest-paper-splitter to turn this economics paper into interview
 If you want downloadable files instead of chat-only output:
 
 ```text
-Use $economics-retest-paper-splitter to analyze this paper and save downloadable full.json, interview.json, written_exam.json, and retest_pack.xlsx in the workspace.
+Use $economics-retest-paper-splitter to analyze this paper and save downloadable full.json, interview.json, written_exam.json, retest_pack.xlsx, retest_pack_memorize.xlsx, and retest_pack_print.xlsx in the workspace.
 ```
 
 If you want a deterministic local workflow, run the bundled script directly:
@@ -305,12 +305,14 @@ Use $economics-retest-paper-splitter to split this economics paper into intervie
 
 ## Downloadable Files
 
-当你明确要求保存结果时，这个技能可以在当前工作区生成 3 个可下载 JSON 文件和 1 个可下载 Excel 文件：
+当你明确要求保存结果时，这个技能可以在当前工作区生成 3 个可下载 JSON 文件和 3 个可下载 Excel 文件：
 
 - `output/economics-retest-paper-splitter/<paper-slug>/full.json`
 - `output/economics-retest-paper-splitter/<paper-slug>/interview.json`
 - `output/economics-retest-paper-splitter/<paper-slug>/written_exam.json`
 - `output/economics-retest-paper-splitter/<paper-slug>/retest_pack.xlsx`
+- `output/economics-retest-paper-splitter/<paper-slug>/retest_pack_memorize.xlsx`
+- `output/economics-retest-paper-splitter/<paper-slug>/retest_pack_print.xlsx`
 
 对应 schema：
 
@@ -321,7 +323,7 @@ Use $economics-retest-paper-splitter to split this economics paper into intervie
 推荐直接这样提：
 
 ```text
-使用 $economics-retest-paper-splitter 分析这篇文献，并把结果保存为可下载的 full.json、interview.json、written_exam.json 和 retest_pack.xlsx。
+使用 $economics-retest-paper-splitter 分析这篇文献，并把结果保存为可下载的 full.json、interview.json、written_exam.json、retest_pack.xlsx、retest_pack_memorize.xlsx 和 retest_pack_print.xlsx。
 ```
 
 如果你希望完全走本地脚本、避免临场生成不稳定，可以直接运行：
@@ -350,6 +352,12 @@ Excel 工作簿包含这些 sheet：
 - `Overlap`
 - `Terms`
 - `Run Report`
+
+三个 Excel 文件的用途分别是：
+
+- `retest_pack.xlsx`: 默认通用版
+- `retest_pack_memorize.xlsx`: 更适合背诵和高亮复习
+- `retest_pack_print.xlsx`: 更适合打印和纸质阅读
 
 ## Regression Examples
 

@@ -37,6 +37,8 @@ WRITTEN_SCHEMA_PATH = ROOT / "references" / "written-output-schema.json"
 ALLOWED_LANGUAGES = {"中文文献", "英文文献", "中英混合文献"}
 OUTPUT_FILENAMES = ("full.json", "interview.json", "written_exam.json")
 EXCEL_FILENAME = "retest_pack.xlsx"
+MEMORIZE_EXCEL_FILENAME = "retest_pack_memorize.xlsx"
+PRINT_EXCEL_FILENAME = "retest_pack_print.xlsx"
 
 FIELD_KEYWORDS = {
     "数字经济学": [
@@ -1397,19 +1399,34 @@ def write_json(path: Path, data: dict[str, Any], schema_path: Path) -> None:
     validate_against_schema(reloaded, schema)
 
 
-def style_sheet(sheet) -> None:
-    header_fill = PatternFill(fill_type="solid", fgColor="DCE6F1")
-    title_fill = PatternFill(fill_type="solid", fgColor="1F4E78")
-    section_fill = PatternFill(fill_type="solid", fgColor="F4B183")
+def style_sheet(sheet, theme: str = "default") -> None:
+    if theme == "memorize":
+        header_fill = PatternFill(fill_type="solid", fgColor="FFF2CC")
+        title_fill = PatternFill(fill_type="solid", fgColor="9E2A2B")
+        section_fill = PatternFill(fill_type="solid", fgColor="C6E0B4")
+        title_font_color = "FFFFFF"
+        header_font_color = "000000"
+    elif theme == "print":
+        header_fill = PatternFill(fill_type="solid", fgColor="E7E6E6")
+        title_fill = PatternFill(fill_type="solid", fgColor="7F7F7F")
+        section_fill = PatternFill(fill_type="solid", fgColor="D9D9D9")
+        title_font_color = "FFFFFF"
+        header_font_color = "000000"
+    else:
+        header_fill = PatternFill(fill_type="solid", fgColor="DCE6F1")
+        title_fill = PatternFill(fill_type="solid", fgColor="1F4E78")
+        section_fill = PatternFill(fill_type="solid", fgColor="F4B183")
+        title_font_color = "FFFFFF"
+        header_font_color = "000000"
 
     for cell in sheet[1]:
-        cell.font = Font(bold=True, color="FFFFFF")
+        cell.font = Font(bold=True, color=title_font_color)
         cell.fill = title_fill
         cell.alignment = Alignment(horizontal="center", vertical="center")
 
     if sheet.max_row >= 2:
         for cell in sheet[2]:
-            cell.font = Font(bold=True)
+            cell.font = Font(bold=True, color=header_font_color)
             cell.fill = header_fill
             cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
@@ -1434,6 +1451,24 @@ def style_sheet(sheet) -> None:
                 cell.font = Font(bold=True, color="000000")
                 cell.fill = section_fill
 
+    if theme == "memorize":
+        for row_idx in range(3, sheet.max_row + 1):
+            if row_idx % 2 == 1:
+                for cell in sheet[row_idx]:
+                    if cell.fill.fill_type is None:
+                        cell.fill = PatternFill(fill_type="solid", fgColor="FCFCF2")
+
+    if theme == "print":
+        sheet.sheet_view.showGridLines = False
+        sheet.page_setup.orientation = "landscape"
+        sheet.page_setup.fitToWidth = 1
+        sheet.page_setup.fitToHeight = 0
+        sheet.print_title_rows = "$1:$2"
+        sheet.page_margins.left = 0.3
+        sheet.page_margins.right = 0.3
+        sheet.page_margins.top = 0.4
+        sheet.page_margins.bottom = 0.4
+
 
 def append_table(sheet, title: str, headers: list[str], rows: list[list[str]]) -> None:
     sheet.append([title])
@@ -1449,6 +1484,7 @@ def create_excel_workbook(
     interview: dict[str, Any],
     written: dict[str, Any],
     run_report: dict[str, Any],
+    theme: str = "default",
 ) -> None:
     workbook = Workbook()
 
@@ -1469,7 +1505,7 @@ def create_excel_workbook(
     ]
     for row in overview_rows:
         overview.append(row)
-    style_sheet(overview)
+    style_sheet(overview, theme=theme)
 
     interview_sheet = workbook.create_sheet("Interview")
     append_table(
@@ -1487,7 +1523,7 @@ def create_excel_workbook(
             for item in interview["interview_useful"]
         ],
     )
-    style_sheet(interview_sheet)
+    style_sheet(interview_sheet, theme=theme)
 
     written_sheet = workbook.create_sheet("Written")
     append_table(
@@ -1505,7 +1541,7 @@ def create_excel_workbook(
             for item in written["written_exam_useful"]
         ],
     )
-    style_sheet(written_sheet)
+    style_sheet(written_sheet, theme=theme)
 
     overlap_sheet = workbook.create_sheet("Overlap")
     append_table(
@@ -1517,7 +1553,7 @@ def create_excel_workbook(
             for item in full["overlap_but_rewritten"]
         ],
     )
-    style_sheet(overlap_sheet)
+    style_sheet(overlap_sheet, theme=theme)
 
     terms_sheet = workbook.create_sheet("Terms")
     append_table(
@@ -1541,14 +1577,14 @@ def create_excel_workbook(
         ["Pattern"],
         [[item] for item in full["english_support"]["written_sentence_patterns"]],
     )
-    style_sheet(terms_sheet)
+    style_sheet(terms_sheet, theme=theme)
 
     report_sheet = workbook.create_sheet("Run Report")
     report_sheet.append(["Run Report"])
     report_sheet.append(["Field", "Value"])
     for key, value in run_report.items():
         report_sheet.append([key, json.dumps(value, ensure_ascii=False) if isinstance(value, (list, dict)) else value])
-    style_sheet(report_sheet)
+    style_sheet(report_sheet, theme=theme)
 
     workbook.save(output_path)
     reloaded = load_workbook(output_path)
@@ -1594,12 +1630,16 @@ def main() -> int:
             json.dumps(run_report, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
-        create_excel_workbook(output_dir / EXCEL_FILENAME, full, interview, written, run_report)
+        create_excel_workbook(output_dir / EXCEL_FILENAME, full, interview, written, run_report, theme="default")
+        create_excel_workbook(output_dir / MEMORIZE_EXCEL_FILENAME, full, interview, written, run_report, theme="memorize")
+        create_excel_workbook(output_dir / PRINT_EXCEL_FILENAME, full, interview, written, run_report, theme="print")
 
         print(output_dir / "full.json")
         print(output_dir / "interview.json")
         print(output_dir / "written_exam.json")
         print(output_dir / EXCEL_FILENAME)
+        print(output_dir / MEMORIZE_EXCEL_FILENAME)
+        print(output_dir / PRINT_EXCEL_FILENAME)
         return 0
     except UserFacingError as exc:
         print(str(exc))
