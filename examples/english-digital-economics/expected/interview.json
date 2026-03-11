@@ -1,0 +1,183 @@
+{
+  "paper_info": {
+    "title": "Digital Economics",
+    "authors": [
+      "Avi Goldfarb",
+      "Catherine Tucker"
+    ],
+    "year": "2017",
+    "language": "英文文献",
+    "field": "数字经济学",
+    "keywords": [
+      "digital economics",
+      "digital technology",
+      "platform economics",
+      "data",
+      "privacy"
+    ]
+  },
+  "language_detect_result": {
+    "detected_language": "英文文献",
+    "confidence": "high",
+    "reason": "标题、摘要或正文主体以英文连续文本为主。"
+  },
+  "one_sentence_summary": "本文围绕《Digital Economics》展开，摘要首先强调：Digital technology is the representation of information in bits.",
+  "interview_useful": [
+    {
+      "label": "研究背景",
+      "core_content": "《Digital Economics》的研究背景可以概括为：Digital technology is the representation of information in bits.",
+      "reason_for_interview": "适合开场说明文章切入点，帮助快速建立你对文献的整体把握。",
+      "typical_questions": [
+        "这篇文章为什么值得研究？",
+        "作者关注的现实背景是什么？"
+      ],
+      "oral_answer_sample": "我理解这篇文章的背景是，Digital technology is the representation of information in bits.，所以作者想从经济学角度解释这种变化到底改变了什么。 "
+    },
+    {
+      "label": "研究问题",
+      "core_content": "本文核心要回答的是：在数字经济学语境下，哪些成本或约束发生了变化，以及这种变化如何影响经济活动与制度安排。",
+      "reason_for_interview": "能帮助你把文章主线概括成一句可回答的话。",
+      "typical_questions": [
+        "这篇文章到底在研究什么？",
+        "如果一句话概括这篇文献，你会怎么说？"
+      ],
+      "oral_answer_sample": "如果一句话概括，我会说作者是在讨论数字化条件下，哪些关键成本下降了，以及这些变化怎样重塑经济行为。 "
+    },
+    {
+      "label": "机制分析",
+      "core_content": "文章最核心的机制框架是围绕搜索成本、复制成本、运输成本、追踪成本、验证成本展开。作者的逻辑不是把数字经济看成全新理论，而是强调成本结构变化之后，经典经济模型会得出不同的行为结果。",
+      "reason_for_interview": "机制是导师最可能继续追问的部分，也是最能体现理解深度的部分。",
+      "typical_questions": [
+        "文章的核心机制是什么？",
+        "为什么说数字经济的关键是成本下降？"
+      ],
+      "oral_answer_sample": "我觉得作者最重要的贡献是把问题收束到搜索成本、复制成本、运输成本、追踪成本、验证成本这条主线上，也就是数字化先改变成本条件，再改变交易和组织方式。 "
+    },
+    {
+      "label": "核心结论",
+      "core_content": "The paper also highlights policy issues such as privacy, copyright, net neutrality, platform governance, and discrimination.",
+      "reason_for_interview": "适合回答“文章最重要的发现是什么”。",
+      "typical_questions": [
+        "作者最后得出了什么判断？",
+        "文章的总体结论是什么？"
+      ],
+      "oral_answer_sample": "作者最后的判断不是数字化一定单向改善一切，而是它显著重塑了经济成本结构，因此效果取决于组织、技能和制度环境。 "
+    },
+    {
+      "label": "政策启示",
+      "core_content": "从政策层面看，文章提示需要重点关注隐私保护、版权治理、反歧视、平台规则等问题，因为数字技术带来效率提升的同时，也会放大治理与规则设计的重要性。",
+      "reason_for_interview": "适合把文献和现实政策问题连接起来。",
+      "typical_questions": [
+        "这篇文章有什么政策含义？",
+        "数字经济研究为什么会落到治理问题上？"
+      ],
+      "oral_answer_sample": "我觉得这篇文章一个很强的现实启示是，数字经济不能只看效率，还要看隐私保护、版权治理、反歧视、平台规则这些制度问题。 "
+    },
+    {
+      "label": "创新点",
+      "core_content": "文章的创新在于提供了一个统一的解释框架，把分散的数字经济研究整合到同一条经济学主线中。",
+      "reason_for_interview": "能体现你不仅看到了结论，也理解文章的方法论价值。",
+      "typical_questions": [
+        "这篇文章的贡献体现在哪里？",
+        "你觉得它为什么有代表性？"
+      ],
+      "oral_answer_sample": "我认为它最大的价值，是把很多零散问题整合成一个统一框架，而不是只罗列数字经济现象。 "
+    },
+    {
+      "label": "局限性",
+      "core_content": "这篇文章更强于框架整合，弱于对单个机制的严格识别；如果要判断某个具体结论是否稳健，还需要回到对应的实证文献中去看。",
+      "reason_for_interview": "适合回答文献评价题，避免只说优点不说不足。",
+      "typical_questions": [
+        "这篇文章有什么不足？",
+        "你觉得它还有哪些没有展开的地方？"
+      ],
+      "oral_answer_sample": "如果从文献评价角度看，我会说这篇文章强在总框架，但弱在它毕竟不是单篇识别型论文，所以很多结论还要结合具体研究再判断。 "
+    },
+    {
+      "label": "延伸研究方向",
+      "core_content": "后续可以继续追问新技术条件下是否出现新的成本下降类型，以及同一机制在不同国家、行业和制度环境中为何会表现出不同的结果。",
+      "reason_for_interview": "适合回答“如果继续研究你会怎么做”。",
+      "typical_questions": [
+        "如果往下做研究，你会怎么延伸？",
+        "这篇文章对今天的研究还有哪些启发？"
+      ],
+      "oral_answer_sample": "如果往后延伸，我会关注新技术是不是带来了新的成本变化，以及这些变化在不同制度环境下为什么会有不同效果。 "
+    }
+  ],
+  "review_outline": {
+    "interview_outline": [
+      "先交代研究对象与背景。",
+      "再概括核心研究问题与机制主线。",
+      "然后说明最重要结论与政策含义。",
+      "最后补创新点、局限性和延伸方向。"
+    ]
+  },
+  "extra": {
+    "key_points": [
+      "数字经济学研究的关键是把技术变化还原为经济成本变化。",
+      "数字化通常不会自动带来单向福利改善，而是伴随显著异质性。",
+      "平台规则、组织资本和制度环境会影响数字技术的实际效果。"
+    ],
+    "mechanisms": [
+      "数字化 -> 信息处理更便宜 -> 搜索成本、复制成本、运输成本、追踪成本、验证成本 -> 交易与组织方式变化",
+      "技术扩散 -> 市场边界变化 -> 效率与分配结果重构"
+    ],
+    "policy_implications": [
+      "需要关注隐私保护、版权治理、反歧视、平台规则。",
+      "需要把效率提升与制度治理放在同一分析框架下。"
+    ],
+    "limitations": [
+      "框架整合强，但不能替代单篇识别型实证研究。",
+      "不同场景下机制强弱可能存在明显异质性。"
+    ]
+  },
+  "english_support": {
+    "key_terms": [
+      {
+        "english": "digital economics",
+        "chinese": "数字经济",
+        "explanation": "研究数字技术如何改变经济活动与资源配置的领域。"
+      },
+      {
+        "english": "consumer surplus",
+        "chinese": "消费者剩余",
+        "explanation": "消费者愿付价格与实际支付价格之间的差额。"
+      },
+      {
+        "english": "platform governance",
+        "chinese": "平台治理",
+        "explanation": "围绕平台规则、激励和责任分配形成的治理安排。"
+      },
+      {
+        "english": "search costs",
+        "chinese": "搜索成本",
+        "explanation": "指与搜索成本相关的资源消耗或约束。"
+      },
+      {
+        "english": "replication costs",
+        "chinese": "复制成本",
+        "explanation": "指与复制成本相关的资源消耗或约束。"
+      },
+      {
+        "english": "transportation costs",
+        "chinese": "运输成本",
+        "explanation": "指与运输成本相关的资源消耗或约束。"
+      },
+      {
+        "english": "tracking costs",
+        "chinese": "追踪成本",
+        "explanation": "指与追踪成本相关的资源消耗或约束。"
+      },
+      {
+        "english": "verification costs",
+        "chinese": "验证成本",
+        "explanation": "指与验证成本相关的资源消耗或约束。"
+      }
+    ],
+    "oral_sentence_patterns": [
+      "This paper explains the topic through changing economic costs rather than through a completely new theory.",
+      "The key contribution is to organize the literature around a small number of core mechanisms.",
+      "In my view, the paper is useful because it connects digital change to standard economic reasoning."
+    ]
+  }
+}

@@ -44,6 +44,12 @@ It is designed for use cases where reading a paper is not enough and the real bo
 
 ## Quick Start
 
+Install the required dependency first:
+
+```bash
+python3 -m pip install --user pypdf
+```
+
 Install the skill into `~/.codex/skills/`:
 
 ```bash
@@ -67,6 +73,12 @@ If you want downloadable files instead of chat-only output:
 
 ```text
 Use $economics-retest-paper-splitter to analyze this paper and save downloadable full.json, interview.json, and written_exam.json in the workspace.
+```
+
+If you want a deterministic local workflow, run the bundled script directly:
+
+```bash
+python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf
 ```
 
 ## Workflow
@@ -299,6 +311,33 @@ Use $economics-retest-paper-splitter to split this economics paper into intervie
 使用 $economics-retest-paper-splitter 分析这篇文献，并把结果保存为可下载的 full.json、interview.json 和 written_exam.json。
 ```
 
+如果你希望完全走本地脚本、避免临场生成不稳定，可以直接运行：
+
+```bash
+python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf
+```
+
+或：
+
+```bash
+python3 scripts/generate_retest_json.py --input-text "Title: ... Abstract: ..."
+```
+
+## Regression Examples
+
+仓库内置了两组最小回归样例：
+
+- `examples/english-digital-economics`
+- `examples/chinese-digital-economics`
+
+运行回归检查：
+
+```bash
+python3 scripts/check_examples.py
+```
+
+这会重新生成样例输出并与 `expected/*.json` 对比，用来检查字段结构、文件命名和输出稳定性是否被后续改动破坏。
+
 ## 输出示意
 
 ```json
@@ -349,8 +388,16 @@ Use $economics-retest-paper-splitter to split this economics paper into intervie
 ├── LICENSE
 ├── agents/
 │   └── openai.yaml
+├── scripts/
+│   ├── generate_retest_json.py
+│   └── check_examples.py
+├── examples/
+│   ├── english-digital-economics/
+│   └── chinese-digital-economics/
 └── references/
-    └── output-schema.json
+    ├── output-schema.json
+    ├── interview-output-schema.json
+    └── written-output-schema.json
 ```
 
 ## License

@@ -1,0 +1,6 @@
+Title: Digital Economics
+Authors: Avi Goldfarb; Catherine Tucker
+Year: 2017
+
+Abstract:
+Digital technology is the representation of information in bits. This technology has reduced the cost of storage, computation, and transmission of data. Research on digital economics examines whether and how digital technology changes economic activity. In this review, we emphasize the reduction in five distinct economic costs associated with digital economic activity: search costs, replication costs, transportation costs, tracking costs, and verification costs. Across a variety of fields, economists examine how digital technologies change economic activity. While these papers often have different perspectives and cite different literatures, a core theme is that digitization has reduced a number of specific economic costs. The paper also highlights policy issues such as privacy, copyright, net neutrality, platform governance, and discrimination.

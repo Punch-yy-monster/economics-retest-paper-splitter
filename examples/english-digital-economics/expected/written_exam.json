@@ -1,0 +1,182 @@
+{
+  "paper_info": {
+    "title": "Digital Economics",
+    "authors": [
+      "Avi Goldfarb",
+      "Catherine Tucker"
+    ],
+    "year": "2017",
+    "language": "英文文献",
+    "field": "数字经济学",
+    "keywords": [
+      "digital economics",
+      "digital technology",
+      "platform economics",
+      "data",
+      "privacy"
+    ]
+  },
+  "language_detect_result": {
+    "detected_language": "英文文献",
+    "confidence": "high",
+    "reason": "标题、摘要或正文主体以英文连续文本为主。"
+  },
+  "one_sentence_summary": "本文围绕《Digital Economics》展开，摘要首先强调：Digital technology is the representation of information in bits.",
+  "written_exam_useful": [
+    {
+      "label": "核心概念定义",
+      "core_content": "Digital technology is the representation of information in bits.",
+      "reason_for_written_exam": "适合用于名词解释和“什么是该研究主题”类简答题。",
+      "question_types": [
+        "名词解释",
+        "简答题"
+      ],
+      "exam_expression": "就《Digital Economics》所体现的研究思路而言，数字经济学的核心不在于单纯讨论技术本身，而在于分析技术变化如何通过成本重构影响经济行为。"
+    },
+    {
+      "label": "理论脉络",
+      "core_content": "文章将数字经济学问题放回标准经济学框架中理解，强调在成本结构变化后，既有搜索理论、价格理论、声誉理论和组织理论需要重新解释数字化现象。",
+      "reason_for_written_exam": "适合文献综述题和理论来源题。",
+      "question_types": [
+        "简答题",
+        "论述题"
+      ],
+      "exam_expression": "从理论脉络看，文章并未脱离传统经济学，而是在既有理论基础上，围绕搜索成本、复制成本、运输成本、追踪成本、验证成本等成本变化重构对数字经济的解释。 "
+    },
+    {
+      "label": "理论框架",
+      "core_content": "全文的理论框架可概括为“数字化 -> 成本下降 -> 交易与组织方式变化 -> 效率、福利与治理结果变化”，其中重点成本包括搜索成本、复制成本、运输成本、追踪成本、验证成本。",
+      "reason_for_written_exam": "适合论述题中搭建总分结构。",
+      "question_types": [
+        "简答题",
+        "论述题"
+      ],
+      "exam_expression": "文章构建的分析框架是：数字技术推动关键成本下降，关键成本下降进一步影响市场交易、平台组织、企业决策与政策治理。 "
+    },
+    {
+      "label": "机制链条",
+      "core_content": "数字化 -> 信息处理与传输更便宜 -> 搜索成本、复制成本、运输成本、追踪成本、验证成本下降 -> 市场匹配、价格形成、平台组织和福利分配发生变化。",
+      "reason_for_written_exam": "适合机制展开题。",
+      "question_types": [
+        "简答题",
+        "论述题"
+      ],
+      "exam_expression": "从作用机制看，数字化通过降低搜索成本、复制成本、运输成本、追踪成本、验证成本，重塑了交易成本、信息流动和组织边界，并据此改变市场运行机制。 "
+    },
+    {
+      "label": "规范化结论表述",
+      "core_content": "数字技术的经济效应并不只是简单提升效率，而是通过重构成本结构带来复杂且具有异质性的行为后果。",
+      "reason_for_written_exam": "适合论述题结尾总结。",
+      "question_types": [
+        "论述题"
+      ],
+      "exam_expression": "总体而言，数字经济的本质是成本结构重塑。其影响既表现为效率提升，也表现为平台治理、制度约束和分配结果的复杂变化。 "
+    },
+    {
+      "label": "政策背景",
+      "core_content": "文章涉及的政策背景主要包括隐私保护、版权治理、反歧视、平台规则，表明数字经济研究天然带有强烈的制度与治理维度。",
+      "reason_for_written_exam": "适合联系现实制度背景作答。",
+      "question_types": [
+        "简答题",
+        "论述题"
+      ],
+      "exam_expression": "在政策层面，数字经济并非仅涉及技术扩散问题，还涉及隐私保护、版权治理、反歧视、平台规则等制度安排。 "
+    },
+    {
+      "label": "高频术语",
+      "core_content": "search, replication, transportation, tracking, verification",
+      "reason_for_written_exam": "适合术语积累与英文表达。",
+      "question_types": [
+        "名词解释",
+        "简答题"
+      ],
+      "exam_expression": "作答时可围绕‘成本下降—市场重构—政策治理’这一主线展开，并结合高频术语提升表达规范性。 "
+    },
+    {
+      "label": "可背诵知识块",
+      "core_content": "《Digital Economics》所体现的基本逻辑是：信息数字化带来关键成本下降，关键成本下降改变交易和组织方式，交易和组织方式变化进一步影响效率、福利与治理结果。",
+      "reason_for_written_exam": "适合直接背诵并迁移到论述题。",
+      "question_types": [
+        "简答题",
+        "论述题"
+      ],
+      "exam_expression": "数字经济学的核心逻辑可以概括为：技术进步导致成本条件变化，成本条件变化导致行为与制度安排变化，行为与制度安排变化最终影响经济绩效。 "
+    }
+  ],
+  "review_outline": {
+    "written_outline": [
+      "先背核心概念定义与总框架。",
+      "再背机制链条与规范化结论。",
+      "然后整理政策背景与高频术语。",
+      "最后背可迁移的知识块表达。"
+    ]
+  },
+  "extra": {
+    "key_points": [
+      "数字经济学研究的关键是把技术变化还原为经济成本变化。",
+      "数字化通常不会自动带来单向福利改善，而是伴随显著异质性。",
+      "平台规则、组织资本和制度环境会影响数字技术的实际效果。"
+    ],
+    "mechanisms": [
+      "数字化 -> 信息处理更便宜 -> 搜索成本、复制成本、运输成本、追踪成本、验证成本 -> 交易与组织方式变化",
+      "技术扩散 -> 市场边界变化 -> 效率与分配结果重构"
+    ],
+    "policy_implications": [
+      "需要关注隐私保护、版权治理、反歧视、平台规则。",
+      "需要把效率提升与制度治理放在同一分析框架下。"
+    ],
+    "limitations": [
+      "框架整合强，但不能替代单篇识别型实证研究。",
+      "不同场景下机制强弱可能存在明显异质性。"
+    ]
+  },
+  "english_support": {
+    "key_terms": [
+      {
+        "english": "digital economics",
+        "chinese": "数字经济",
+        "explanation": "研究数字技术如何改变经济活动与资源配置的领域。"
+      },
+      {
+        "english": "consumer surplus",
+        "chinese": "消费者剩余",
+        "explanation": "消费者愿付价格与实际支付价格之间的差额。"
+      },
+      {
+        "english": "platform governance",
+        "chinese": "平台治理",
+        "explanation": "围绕平台规则、激励和责任分配形成的治理安排。"
+      },
+      {
+        "english": "search costs",
+        "chinese": "搜索成本",
+        "explanation": "指与搜索成本相关的资源消耗或约束。"
+      },
+      {
+        "english": "replication costs",
+        "chinese": "复制成本",
+        "explanation": "指与复制成本相关的资源消耗或约束。"
+      },
+      {
+        "english": "transportation costs",
+        "chinese": "运输成本",
+        "explanation": "指与运输成本相关的资源消耗或约束。"
+      },
+      {
+        "english": "tracking costs",
+        "chinese": "追踪成本",
+        "explanation": "指与追踪成本相关的资源消耗或约束。"
+      },
+      {
+        "english": "verification costs",
+        "chinese": "验证成本",
+        "explanation": "指与验证成本相关的资源消耗或约束。"
+      }
+    ],
+    "written_sentence_patterns": [
+      "The paper shows that digitization mainly matters because it changes the structure of economic costs.",
+      "The main mechanism can be summarized as lower costs leading to new market and organizational outcomes.",
+      "The economic effects of digital technology are heterogeneous and shaped by institutional conditions."
+    ]
+  }
+}

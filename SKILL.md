@@ -10,6 +10,20 @@ description: "Split an economics paper or literature excerpt into two different 
 Turn one economics paper into two different retest outputs: `interview_useful` and `written_exam_useful`.
 Detect language first, refuse to analyze when material is insufficient, and return only valid JSON once enough content is available.
 
+For saved or downloadable outputs, use the bundled script at `scripts/generate_retest_json.py` as the primary path.
+Do not hand-write JSON files when the script can produce them.
+
+## Dependencies
+
+Required Python package:
+
+```bash
+python3 -m pip install --user pypdf
+```
+
+`pypdf` is required for PDF extraction.
+Poppler is not required for the main workflow.
+
 ## Gatekeeping
 
 Apply these checks before analyzing:
@@ -145,6 +159,18 @@ Use empty strings or empty arrays only when a field truly cannot be supported by
 
 When the user asks for downloadable JSON, saved JSON, separate JSON files, or clearly intends to reuse the result outside the chat, write files in the current workspace after generating the analysis.
 
+Prefer this command:
+
+```bash
+python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf
+```
+
+For raw text:
+
+```bash
+python3 scripts/generate_retest_json.py --input-text "Title: ... Abstract: ..."
+```
+
 Use this directory convention:
 
 - `output/economics-retest-paper-splitter/<paper-slug>/full.json`
@@ -172,6 +198,7 @@ After writing files:
 - mention the saved file paths in the response
 - keep the JSON itself valid
 - do not add extra commentary inside the JSON files
+- treat the script output as the source of truth for saved files
 
 ## Field Guidance
 
