@@ -60,6 +60,20 @@ Example prompt:
 Use $economics-retest-paper-splitter to turn this economics paper into interview-ready and written-exam-ready JSON materials.
 ```
 
+## Workflow
+
+```mermaid
+flowchart LR
+    A["Input paper title / abstract / body"] --> B{"Enough information?"}
+    B -- "No" --> C["Ask for abstract or正文"]
+    B -- "Yes" --> D["Detect language"]
+    D --> E["Extract background, question, mechanism, conclusion"]
+    E --> F["Rewrite for interview"]
+    E --> G["Rewrite for written exam"]
+    F --> H["Strict JSON output"]
+    G --> H
+```
+
 ## 为什么这个技能值得用
 
 大多数文献总结工具只能做到这些：
@@ -185,6 +199,57 @@ Use $economics-retest-paper-splitter to split this economics paper into intervie
 
 ```text
 请确认这是一篇中文文献、英文文献，还是中英混合文献？
+```
+
+## Examples
+
+### Example Input
+
+```text
+使用 $economics-retest-paper-splitter 拆解下面这篇文献，输出适合复试面试和笔试的 JSON。
+
+标题：数字基础设施建设与地区创新质量提升
+
+摘要：本文基于 2011—2022 年中国地级市面板数据，考察数字基础设施建设对地区创新质量的影响。研究发现，数字基础设施显著提升地区创新质量，这一作用在东部地区和高人力资本地区更为明显。机制检验表明，数字基础设施主要通过降低信息不对称、改善金融资源配置和促进知识溢出来提升创新质量。进一步分析发现，地方政府数字治理能力越强，数字基础设施对创新质量的促进作用越明显。
+```
+
+### Example Output Snippet
+
+```json
+{
+  "one_sentence_summary": "文章研究数字基础设施如何通过降低信息不对称、改善资源配置和促进知识溢出来提升地区创新质量。",
+  "interview_useful": [
+    {
+      "label": "机制分析",
+      "core_content": "这篇文章的核心机制可以概括为数字基础设施先改善信息流动和资源匹配，再通过缓解信息不对称、优化金融资源配置和促进知识溢出，最终提升地区创新质量。",
+      "reason_for_interview": "机制是导师最容易继续追问的部分，能体现你是否真正理解论文而不只是记住结论。",
+      "typical_questions": [
+        "为什么数字基础设施会影响创新质量？",
+        "作者识别出的核心机制是什么？"
+      ],
+      "oral_answer_sample": "我理解这篇文章的逻辑是，数字基础设施本身不是直接创造创新，而是先改善信息和资源配置效率，再通过缓解信息不对称和强化知识扩散来提高创新质量。"
+    }
+  ],
+  "written_exam_useful": [
+    {
+      "label": "机制链条",
+      "core_content": "数字基础设施通过降低信息不对称、改善金融资源配置和促进知识溢出三条路径提升地区创新质量。",
+      "reason_for_written_exam": "适合用于简答题和论述题中的机制展开部分。",
+      "question_types": [
+        "简答题",
+        "论述题"
+      ],
+      "exam_expression": "从作用机制看，数字基础设施通过降低信息不对称、改善金融资源配置并促进知识溢出，进而提升地区创新质量。"
+    }
+  ],
+  "overlap_but_rewritten": [
+    {
+      "topic": "数字基础设施影响创新质量的机制",
+      "interview_version": "可以把它理解为先改善信息和资源流动效率，再进一步带动创新质量上升。",
+      "written_version": "数字基础设施主要通过缓解信息不对称、优化资源配置和强化知识溢出提升创新质量。"
+    }
+  ]
+}
 ```
 
 ## 输出结构
