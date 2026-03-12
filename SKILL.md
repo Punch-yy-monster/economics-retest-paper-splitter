@@ -1,175 +1,182 @@
 ---
 name: economics-retest-paper-splitter
-description: "Split an economics paper or literature excerpt into two different postgraduate retest study materials for Chinese university economics candidates: interview-useful content and written-exam-useful content. Use when the user provides a Chinese, English, or mixed economics paper title, abstract, or body and wants strict JSON output for macroeconomics, microeconomics, digital economics, or related interdisciplinary economics retest preparation."
+description: "A standardized four-channel paper splitter for Chinese economics postgraduate retest preparation. Use when the user provides an economics paper title, abstract, excerpt, body, or PDF and wants fixed JSON or Excel outputs for general interview, English interview, professional written exam, and English written exam preparation."
 ---
 
 # Economics Retest Paper Splitter
 
 ## Overview
 
-Turn one economics paper into two different retest outputs: `interview_useful` and `written_exam_useful`.
-Detect language first, refuse to analyze when material is insufficient, and return only valid JSON once enough content is available.
+This skill is not a generic summary tool.
+It is a standardized output tool for Chinese economics postgraduate retest preparation.
 
-For saved or downloadable outputs, use the bundled script at `scripts/generate_retest_json.py` as the primary path.
+Every valid output must follow one fixed backbone:
+
+1. `研究背景`
+2. `研究问题`
+3. `核心结论`
+4. `机制分析`
+5. `政策启示`
+
+On top of these five mandatory modules, every paper must be expanded into four fixed channels:
+
+1. `general_interview`
+2. `english_interview`
+3. `professional_written_exam`
+4. `english_written_exam`
+
+The structure is fixed across papers.
+Depth may vary.
+The framework may not vary.
+
+For saved or downloadable outputs, use the bundled script at `scripts/generate_retest_json.py`.
 Do not hand-write JSON files when the script can produce them.
-The script is the source of truth for stable file generation, schema validation, and split-file export.
+
+## Trigger Conditions
+
+Use this skill when the user does any of the following:
+
+- provides an economics paper title, abstract, excerpt, body, or PDF
+- asks to split a paper for postgraduate retest preparation
+- asks to distinguish general interview, English interview, professional written exam, and English written exam
+- asks for structured JSON output or downloadable Excel output
 
 ## Dependencies
 
-Required Python package:
+Required Python packages:
 
 ```bash
 python3 -m pip install --user pypdf openpyxl
 ```
 
-`pypdf` is required for PDF extraction.
-`openpyxl` is required for Excel export.
-Poppler is not required for the main workflow.
+- `pypdf` is required for PDF extraction
+- `openpyxl` is required for Excel export
+- Poppler is not required for the main workflow
 
-## Gatekeeping
+## Blocking Rules
 
-Apply these checks before analyzing:
+Apply these checks before generating any JSON:
 
-1. Judge whether the user has provided enough text.
-- If the user only gives a title, only a very short excerpt, or not enough content to identify the research question, conclusion, and mechanism, ask exactly:
+1. If the user only gives a title, or the text is too short to support `研究背景`、`研究问题`、`核心结论`、`机制分析`、`政策启示`, do not output JSON.
+Ask exactly:
+
 `请补充摘要或正文内容，以便继续拆解。`
 
-2. Judge language.
-- Allowed labels: `中文文献`, `英文文献`, `中英混合文献`, `无法判断`.
-- If the user explicitly states the language, use the user's label directly.
-- If you cannot judge language with high confidence, ask exactly:
+2. If the language cannot be judged with enough confidence, do not guess.
+Ask exactly:
+
 `请确认这是一篇中文文献、英文文献，还是中英混合文献？`
 
-When blocked by either rule above, ask the required question in plain Chinese and do not output JSON yet.
+3. If the source cannot support a standardized retest-oriented split, block instead of inventing content.
 
-## Analysis Workflow
+4. If a module is weakly supported, keep the module anyway.
+Use explicit wording such as:
 
-### 1. Identify basic paper information
+- `原文未充分展开`
+- `根据摘要/正文可推断为……`
 
-Extract only what the source supports:
+Do not delete the module.
 
-- `title`
-- `authors`
-- `year`
-- `language`
-- `field`
-- `keywords`
+## Mandatory Analysis Backbone
 
-Set `field` to the best-fit label from:
-
-- `宏观经济学`
-- `微观经济学`
-- `数字经济学`
-- `相关经济学交叉方向`
-
-Leave unknown values empty instead of inventing them.
-
-### 2. Build a paper-level understanding
-
-Infer or extract:
-
-- research background
-- research question
-- research significance
-- core conclusion
-- mechanism chain
-- policy or institutional background
-- innovation
-- limitations
-- possible extension directions
-
-Do not mirror the paper's section headings. Reorganize everything by retest usefulness.
-Internally prefer a paper-type-aware route:
-
-- `review`
-- `empirical`
-- `theoretical`
-- `policy`
-
-Use the paper type to adjust emphasis in the two channels rather than repeating one generic template.
-
-### 3. Force the dual-channel split
-
-Produce two different versions of the same paper:
-
-#### `interview_useful`
-
-Keep only content that helps with oral explanation, supervisor follow-up questions, mechanism interpretation, real-world linkage, policy implications, and literature evaluation.
-
-Good labels include:
+Every paper must first be organized into the same five mandatory modules:
 
 - `研究背景`
 - `研究问题`
-- `研究意义`
 - `核心结论`
 - `机制分析`
 - `政策启示`
+
+These five modules are mandatory, not suggested.
+
+The skill may additionally produce:
+
 - `创新点`
 - `局限性`
-- `延伸研究方向`
-- `导师可能追问`
+- `延伸研究`
+- `术语表`
 
-For each item:
+But optional additions may never replace the five mandatory modules.
 
-- explain the point in natural oral language
-- show why it is useful in an interview
-- give likely follow-up questions
-- provide a short oral answer sample that sounds speakable instead of bookish
+## Four-Channel Constraints
 
-#### `written_exam_useful`
+All four channels must be built around the same five mandatory modules.
+The channels may differ in style and depth, but not in backbone.
 
-Keep only content that helps with term explanation, short-answer questions, essay questions, theory accumulation, standardized expression, and memorization.
+### `general_interview`
 
-Good labels include:
+- Chinese
+- natural and clear
+- suitable for supervisor-style oral questioning
+- each answer should be speakable in about 30 to 90 seconds
 
-- `核心概念定义`
-- `理论脉络`
-- `理论框架`
-- `机制链条`
-- `规范化结论表述`
-- `制度背景`
-- `政策背景`
-- `高频术语`
-- `可背诵知识块`
+### `english_interview`
 
-For each item:
+- English
+- professional and natural
+- suitable for oral interview use
+- terminology must be accurate
+- do not sound like a literal translation of Chinese output
 
-- rewrite in concise exam language
-- make the logic chain explicit
-- prefer definitional or normative phrasing
-- make `exam_expression` directly writable in an answer sheet
+### `professional_written_exam`
 
-## Rewrite Rules
+- Chinese
+- standardized and concise
+- logically organized
+- suitable for high-scoring written exam answers
 
-Do not output a generic summary.
-Do not mechanically restate `摘要-引言-方法-结论`.
-Do not copy the same sentence into both channels.
+### `english_written_exam`
 
-If one knowledge point is useful for both interview and written exam:
+- professional written English
+- suitable for short-answer and analytical written responses
+- distinct from oral English in tone and sentence structure
 
-- put the oral version in `interview_version`
-- put the exam-style version in `written_version`
-- record both in `overlap_but_rewritten`
+## Consistency Rules
 
-Use these distinctions:
+The following rules are mandatory:
 
-- Interview version: causal, explanatory, discussible, easy to say aloud
-- Written version: compact, formal, easy to memorize, easy to score
+- every paper must keep the same five mandatory modules
+- every module must have corresponding content in all four channels
+- different papers may have different content, but not different top-level structure
+- module names may not be changed
+- modules may not be omitted
+- modules may not be replaced by near-synonyms
+- optional sections may be added, but the mandatory backbone may not change
 
 ## Output Rules
 
-Once enough information is available, output only valid JSON.
-Do not add Markdown, headings, or explanations outside JSON.
-Keep field names exactly as defined in [references/output-schema.json](references/output-schema.json).
+Once enough information is available, output only valid JSON or script-generated files.
+Keep field names exactly aligned with `references/output-schema.json`.
 
-Populate arrays with only useful entries. Do not pad with empty objects.
-Use empty strings or empty arrays only when a field truly cannot be supported by the source.
+Top-level full output must contain:
+
+- `meta`
+- `paper_info`
+- `language_detect_result`
+- `mandatory_blocks`
+- `one_sentence_summary`
+- `general_interview`
+- `english_interview`
+- `professional_written_exam`
+- `english_written_exam`
+- `review_outline`
+- `terms`
+- `low_priority`
+- `extra`
+
+`mandatory_blocks` must always contain:
+
+- `research_background`
+- `research_question`
+- `core_conclusion`
+- `mechanism_analysis`
+- `policy_implication`
+
+If a module is weakly supported, preserve the field and state that the original text did not fully elaborate it.
 
 ## Downloadable Files
 
-When the user asks for downloadable JSON, saved JSON, separate JSON files, or clearly intends to reuse the result outside the chat, write files in the current workspace after generating the analysis.
-
-Prefer this command:
+When the user asks for saved JSON, downloadable JSON, reusable structured output, or Excel export, prefer:
 
 ```bash
 python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf
@@ -193,109 +200,66 @@ python3 scripts/generate_retest_json.py --input-text "Title: ... Abstract: ..." 
 Use this directory convention:
 
 - `output/economics-retest-paper-splitter/<paper-slug>/full.json`
-- `output/economics-retest-paper-splitter/<paper-slug>/interview.json`
-- `output/economics-retest-paper-splitter/<paper-slug>/written_exam.json`
+- `output/economics-retest-paper-splitter/<paper-slug>/general_interview.json`
+- `output/economics-retest-paper-splitter/<paper-slug>/english_interview.json`
+- `output/economics-retest-paper-splitter/<paper-slug>/professional_written_exam.json`
+- `output/economics-retest-paper-splitter/<paper-slug>/english_written_exam.json`
 - `output/economics-retest-paper-splitter/<paper-slug>/retest_pack.xlsx`
 - `output/economics-retest-paper-splitter/<paper-slug>/retest_pack_memorize.xlsx`
 - `output/economics-retest-paper-splitter/<paper-slug>/retest_pack_print.xlsx`
 
-Build `<paper-slug>` from the paper title:
-
-- lowercase English if possible
-- replace spaces and punctuation with hyphens
-- keep it short and stable
-- if the title is unavailable, use `untitled-paper`
-
 File responsibilities:
 
-- `full.json`: complete combined output using [references/output-schema.json](references/output-schema.json)
-- `interview.json`: interview-only downloadable JSON using [references/interview-output-schema.json](references/interview-output-schema.json)
-- `written_exam.json`: written-exam-only downloadable JSON using [references/written-output-schema.json](references/written-output-schema.json)
-- `retest_pack.xlsx`: default downloadable workbook with `Overview`, `Interview`, `Written`, `Overlap`, `Terms`, and `Run Report` sheets
-- `retest_pack_memorize.xlsx`: memorize-focused workbook with stronger visual highlights for review
-- `retest_pack_print.xlsx`: print-focused workbook with grayscale styling and print layout settings
-- `run-report.json`: debug-only run metadata including input type, generation time, language label, fallback slug usage, and abstract length
+- `full.json`: full four-channel output
+- `general_interview.json`: Chinese comprehensive interview channel
+- `english_interview.json`: English interview channel
+- `professional_written_exam.json`: Chinese professional written-exam channel
+- `english_written_exam.json`: English written-exam channel
+- `retest_pack.xlsx`: default workbook
+- `retest_pack_memorize.xlsx`: memorize-focused workbook
+- `retest_pack_print.xlsx`: print-focused workbook
+- `run-report.json`: debug metadata for extraction and generation
 
-If the user explicitly asks only for one of the two channels, still prefer saving the requested file and mention the saved path.
-If the user asks to analyze in chat only and does not ask to save, you may return JSON without creating files.
+## Excel Structure
 
-After writing files:
+Excel output should preserve the same standardized structure and at least include:
 
-- mention the saved file paths in the response
-- keep the JSON itself valid
-- do not add extra commentary inside the JSON files
-- treat the script output as the source of truth for saved files
-- rely on the script's exit codes for failure handling:
-  - `1`: 信息不足
-  - `2`: 语言无法判断
-  - `3`: PDF 抽取失败
-  - `4`: schema 校验失败
+- `Overview`
+- `Mandatory Blocks`
+- `General Interview`
+- `English Interview`
+- `Professional Written`
+- `English Written`
+- `Terms`
+- `Run Report`
 
-## Field Guidance
+## Low-Priority Material
 
-### `one_sentence_summary`
+Push the following content into `low_priority` instead of the main backbone:
 
-Summarize the paper in one sentence focused on the research question and main conclusion, not on the paper's structure.
+- over-detailed data cleaning procedures
+- robustness details with weak retest transferability
+- appendix-level technical derivations
+- table details with weak oral or written reuse value
 
-### `low_priority`
+## Prohibitions
 
-Place low-retention or low-retest-value material here, such as:
+Do not do any of the following:
 
-- overly technical estimation details
-- robustness checks with low oral or written reuse
-- data-cleaning minutiae
-- tables or appendix details that do not improve retest performance
+- produce a generic full-paper summary
+- mechanically mirror `引言/方法/结果/结论`
+- use `引言/方法/结果/结论` as a substitute for the retest structure
+- copy one sentence into all four channels
+- treat English output as an attached translation field
+- generate empty or low-value filler for the sake of completeness
+- change the mandatory module names to better-sounding variants
+- drop a mandatory module because the paper is a review, an empirical study, or a theoretical paper
 
-### `review_outline`
+## Failure Handling
 
-Return two short review routes:
+Use the script exit codes as the source of truth:
 
-- `interview_outline`: oral review order
-- `written_outline`: memorization and answer-writing order
-
-### `english_support`
-
-Always support bilingual retest preparation when the paper contains English terms or when the topic clearly has standard English vocabulary.
-
-Include:
-
-- key terms with Chinese explanation
-- oral sentence patterns for interviews
-- written sentence patterns for written exams
-
-### Split-file content
-
-For `interview.json`, keep only fields useful for oral preparation and file reuse:
-
-- `paper_info`
-- `language_detect_result`
-- `one_sentence_summary`
-- `interview_useful`
-- `review_outline.interview_outline`
-- `extra.key_points`
-- `extra.mechanisms`
-- `extra.policy_implications`
-- `extra.limitations`
-- `english_support.key_terms`
-- `english_support.oral_sentence_patterns`
-
-For `written_exam.json`, keep only fields useful for written preparation and file reuse:
-
-- `paper_info`
-- `language_detect_result`
-- `one_sentence_summary`
-- `written_exam_useful`
-- `review_outline.written_outline`
-- `extra.key_points`
-- `extra.mechanisms`
-- `extra.policy_implications`
-- `extra.limitations`
-- `english_support.key_terms`
-- `english_support.written_sentence_patterns`
-
-## Style
-
-Default to Chinese unless the user asks for another language.
-Keep oral samples natural and short.
-Keep written expressions standardized and easy to recite.
-Prefer explicit mechanism chains such as `政策变化 -> 激励变化 -> 行为调整 -> 结果变化`.
+- `1`: 信息不足
+- `2`: 语言无法判断
+- `3`: PDF 抽取失败
+- `4`: schema 校验失败

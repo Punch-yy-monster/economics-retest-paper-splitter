@@ -33,35 +33,8 @@
       "why_this_matters": ""
     }
   ],
-  "english_interview": [
-    {
-      "module": "",
-      "question_en": "",
-      "answer_en": "",
-      "terminology_notes": ""
-    }
-  ],
-  "professional_written_exam": [
-    {
-      "module": "",
-      "question": "",
-      "answer": "",
-      "answer_type": ""
-    }
-  ],
-  "english_written_exam": [
-    {
-      "module": "",
-      "question_en": "",
-      "answer_en": "",
-      "answer_type": ""
-    }
-  ],
   "review_outline": {
-    "general_interview_outline": [],
-    "english_interview_outline": [],
-    "professional_written_exam_outline": [],
-    "english_written_exam_outline": []
+    "general_interview_outline": []
   },
   "terms": [
     {

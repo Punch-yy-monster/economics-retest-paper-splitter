@@ -1,451 +1,325 @@
-# 经济学复试文献双通道拆解器
+# 经济学复试文献四通道拆解器
 
 [![MIT License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![Codex Skill](https://img.shields.io/badge/Codex-Skill-blue)](./SKILL.md)
-[![Output JSON](https://img.shields.io/badge/output-Strict%20JSON-orange)](./references/output-schema.json)
+[![Output JSON](https://img.shields.io/badge/output-Standardized%20JSON-orange)](./references/output-schema.json)
 [![Economics](https://img.shields.io/badge/domain-Economics-red)](./README.md)
+[![Version](https://img.shields.io/badge/version-v2.0.0-black)](./README.md)
 
 ![封面图](./assets/cover.svg)
 
-> Turn one economics paper into two different retest outputs: an interview-ready version and a written-exam-ready version, both in strict JSON.
+> A standardized four-channel paper splitter for Chinese economics postgraduate retest preparation.
 
-把一篇经济学文献，直接拆成两套真正适合复试的材料：
+这个项目不是普通摘要器，也不是泛泛总结工具。
+它的目标是把一篇经济学论文、文献摘要、正文节选或 PDF，稳定拆成研究生复试可直接使用的标准化结构输出。
 
-- 面试能说出口的版本
-- 笔试能写上卷面的版本
+从这个版本开始，项目已升级为：
 
-这不是普通摘要器，也不是把论文换个说法复述一遍。
-它的目标很明确: 帮中国高校经济学研究生复试考生，把文献阅读结果转成更接近得分场景的输出。
+- 固定 5 个 mandatory modules
+- 固定 4 个 retest channels
+- 标准化 JSON
+- 标准化 Excel 导出
 
-如果你也觉得“文献看懂了，但不会讲、不会写、不会背”是复试准备里最耗时间的一环，这个技能就是为这个问题做的。
+## 项目用途
 
-## English Overview
-
-This repository contains a Codex skill for Chinese economics graduate retest preparation.
-Instead of generating a generic paper summary, it forces one paper into two different outputs:
-
-- an oral, interview-ready version
-- a compact, written-exam-ready version
-
-It is designed for use cases where reading a paper is not enough and the real bottleneck is turning that reading into:
-
-- answers you can explain out loud
-- answers you can write on an exam sheet
-- concepts you can memorize and reuse
-
-## Quick Highlights
-
-- Dual-channel split: `interview_useful` and `written_exam_useful`
-- Not a generic summary tool
-- Paper-type-aware output: `review`, `empirical`, `theoretical`, `policy`
-- Rewrites overlapping knowledge into oral and written versions separately
-- Adds likely supervisor follow-up questions
-- Produces strict JSON for reuse in tools, notes, or datasets
-- Can save downloadable `full.json`, `interview.json`, and `written_exam.json`
-- Can save downloadable `retest_pack.xlsx`, `retest_pack_memorize.xlsx`, and `retest_pack_print.xlsx`
-- Writes a lightweight `run-report.json` for debugging and regression checks
-
-## Quick Start
-
-Install the required dependency first:
-
-```bash
-python3 -m pip install --user pypdf openpyxl
-```
-
-Install the skill into `~/.codex/skills/`:
-
-```bash
-mkdir -p ~/.codex/skills
-ln -s /path/to/economics-retest-paper-splitter ~/.codex/skills/economics-retest-paper-splitter
-```
-
-Invoke it in Codex with:
-
-```text
-$economics-retest-paper-splitter
-```
-
-Example prompt:
-
-```text
-Use $economics-retest-paper-splitter to turn this economics paper into interview-ready and written-exam-ready JSON materials.
-```
-
-If you want downloadable files instead of chat-only output:
-
-```text
-Use $economics-retest-paper-splitter to analyze this paper and save downloadable full.json, interview.json, written_exam.json, retest_pack.xlsx, retest_pack_memorize.xlsx, and retest_pack_print.xlsx in the workspace.
-```
-
-If you want a deterministic local workflow, run the bundled script directly:
-
-```bash
-python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf
-```
-
-Useful CLI options:
-
-```bash
-python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf --output-dir /path/to/output
-python3 scripts/generate_retest_json.py --input-text "Title: ... Abstract: ..." --stdout-json
-python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf --slug custom-paper-id
-python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf --language 英文文献
-```
-
-## Workflow
-
-```mermaid
-flowchart LR
-    A["Input paper title / abstract / body"] --> B{"Enough information?"}
-    B -- "No" --> C["Ask for abstract or正文"]
-    B -- "Yes" --> D["Detect language"]
-    D --> E["Extract background, question, mechanism, conclusion"]
-    E --> F["Rewrite for interview"]
-    E --> G["Rewrite for written exam"]
-    F --> H["Strict JSON output"]
-    G --> H
-```
-
-## 为什么这个技能值得用
-
-大多数文献总结工具只能做到这些：
-
-- 提炼摘要
-- 罗列结论
-- 复述研究方法
-
-但复试真正需要的往往是另一套能力：
-
-- 面试时，能不能把研究问题和机制讲清楚
-- 导师追问时，能不能自然展开
-- 笔试时，能不能写出规范、紧凑、像标准答案的表述
-- 同一个知识点，能不能区分“口头表达版”和“书面作答版”
-
-这个技能专门解决这个错位。
-
-## 核心卖点
-
-- 强制双通道拆解: 同一篇文献必须拆成 `interview_useful` 和 `written_exam_useful`
-- 不是普通摘要: 禁止按“摘要、引言、方法、结论”机械复述
-- 自动做复试导向改写: 同一知识点会分别转成口语表达版和笔试作答版
-- 对追问更友好: 输出导师可能追问和参考口头回答
-- 对背诵更友好: 输出规范化结论、机制链条、高频术语和可背诵知识块
-- 严格 JSON 输出: 方便继续喂给别的工具、保存到知识库或批量处理
-- 可落盘为可下载文件: `full.json`、`interview.json`、`written_exam.json`
-
-## 适用对象
-
-面向中国高校经济学研究生复试考生，适用方向包括：
+这个 skill 面向中国经济学研究生复试，适用方向包括：
 
 - 宏观经济学
 - 微观经济学
 - 数字经济学
 - 相关经济学交叉方向
 
-同样适合这些人：
+它解决的问题不是“帮你看懂论文”，而是“把论文变成你在复试里能说、能写、能背、能导出的结构化材料”。
 
-- 想把论文阅读记录结构化的人
-- 想做复试知识库或题库的人
-- 想批量整理文献卡片的人
+## 固定主框架
 
-## 它会做什么
+每篇论文都必须先生成同一组 5 个 mandatory modules：
 
-输入一篇经济学文献的标题、摘要或正文后，这个技能会：
+1. `研究背景`
+2. `研究问题`
+3. `核心结论`
+4. `机制分析`
+5. `政策启示`
 
-1. 先判断文献语言
-2. 检查信息是否足够
-3. 抽取研究背景、问题、机制、结论、政策启示、创新点和局限性
-4. 强制拆成“面试有用内容”和“笔试有用内容”
-5. 把重叠知识点改写成两种不同表达
-6. 输出可直接复用的严格 JSON
+这些模块是强制项，不是建议项。
 
-## 和普通论文总结的区别
+- 不允许遗漏
+- 不允许改名
+- 不允许用近义标题替代
+- 不允许因论文类型不同而更换主框架
 
-| 维度 | 普通总结 | 本技能 |
-| --- | --- | --- |
-| 输出目标 | 看懂论文 | 服务复试 |
-| 输出形式 | 摘要式归纳 | 面试版 + 笔试版双通道 |
-| 表达方式 | 一套说法 | 口语表达版 + 书面作答版 |
-| 对追问支持 | 弱 | 包含典型追问与口头回答 |
-| 对背诵支持 | 弱 | 包含术语、机制链条、可背诵知识块 |
-| 可程序处理性 | 不稳定 | 严格 JSON |
+如果原文某一模块信息不足，该模块仍然必须保留，并明确说明：
 
-## 一个典型使用场景
+- `原文未充分展开`
+- `根据摘要/正文可推断为……`
 
-你读完一篇数字经济文献，知道作者大概在说什么，但一到复试就会卡在这些地方：
+## 四通道输出
 
-- 面试时不知道怎么用 1 分钟讲清研究问题
-- 导师追问“机制是什么”时回答很散
-- 笔试时只能写成读后感，写不出规范表述
+在固定 5 模块的基础上，项目会生成以下四个复试通道：
 
-这个技能的目标，就是把这些“知道”变成“会答”。
+1. `general_interview`
+2. `english_interview`
+3. `professional_written_exam`
+4. `english_written_exam`
 
-## 安装
+四个通道都围绕同一组 mandatory modules 展开，不会各自重新选方向。
 
-将技能目录放到 `~/.codex/skills/` 下，或使用软链接安装：
+### `general_interview`
+
+- 中文综合面试
+- 自然、清晰、适合导师问答
+- 答案应适合 30 到 90 秒的口头表达
+
+### `english_interview`
+
+- 英文面试
+- 专业、自然、适合口试
+- 术语准确，不能有明显直译腔
+
+### `professional_written_exam`
+
+- 中文专业课笔试
+- 规范、精炼、逻辑清晰
+- 适合卷面作答和得分
+
+### `english_written_exam`
+
+- 英文笔试
+- 专业书面英语
+- 适合英文短答题和分析题
+
+## 与旧双通道结构相比的升级
+
+旧版本主干是：
+
+- `interview_useful`
+- `written_exam_useful`
+
+新版本主干升级为：
+
+- 固定 5 模块
+- 四通道并行输出
+- 英文不再是附属翻译字段
+- Excel sheet 与 JSON 字段完全对齐
+
+升级后最大的变化是：
+
+- 结构固定，不再根据论文类型自由改主框架
+- 所有通道围绕相同 5 模块展开
+- 更适合导入 JSON、Excel 和后续题库/知识库
+
+## JSON 结构
+
+完整输出见 [references/output-schema.json](./references/output-schema.json)。
+
+顶层固定字段：
+
+- `meta`
+- `paper_info`
+- `language_detect_result`
+- `mandatory_blocks`
+- `one_sentence_summary`
+- `general_interview`
+- `english_interview`
+- `professional_written_exam`
+- `english_written_exam`
+- `review_outline`
+- `terms`
+- `low_priority`
+- `extra`
+
+其中 `mandatory_blocks` 固定包含：
+
+- `research_background`
+- `research_question`
+- `core_conclusion`
+- `mechanism_analysis`
+- `policy_implication`
+
+### 示例输出结构
+
+```json
+{
+  "meta": {
+    "schema_version": "2.0",
+    "output_version": "2.0.0",
+    "framework": "five-mandatory-modules-four-channels"
+  },
+  "mandatory_blocks": {
+    "research_background": "本文讨论数字化条件变化为何会成为经济学研究的重要议题。",
+    "research_question": "文章关注数字化变量如何影响经济行为与结果。",
+    "core_conclusion": "文章认为数字化因素会显著影响目标经济结果，但强度受制度条件约束。",
+    "mechanism_analysis": "文章强调数字化通过改变信息不对称、资源配置与激励结构来发挥作用。",
+    "policy_implication": "文章提示政策设计必须兼顾效率提升与治理能力。"
+  },
+  "general_interview": [
+    {
+      "module": "research_background",
+      "question": "请用口头方式概括这篇论文的研究背景。",
+      "answer": "如果口头概括这篇论文的研究背景，我会先说：本文讨论数字化条件变化为何会成为经济学研究的重要议题。",
+      "why_this_matters": "研究背景决定你能否先把论文讲顺，避免一开口就进入细节。"
+    }
+  ],
+  "english_interview": [
+    {
+      "module": "research_background",
+      "question_en": "Why is this topic worth studying in the first place?",
+      "answer_en": "The paper starts from the observation that digital technologies are reshaping economic activity, so the author tries to explain why the issue matters economically.",
+      "terminology_notes": "digital economics (数字经济); information asymmetry (信息不对称)"
+    }
+  ],
+  "professional_written_exam": [
+    {
+      "module": "research_background",
+      "question": "请概括本文的研究背景。",
+      "answer": "从研究背景看，本文讨论数字化条件变化为何会成为经济学研究的重要议题。",
+      "answer_type": "简答题"
+    }
+  ],
+  "english_written_exam": [
+    {
+      "module": "research_background",
+      "question_en": "Summarize the research background of the paper.",
+      "answer_en": "The research background lies in the growing importance of digitalization and in the need to explain its economic consequences in a structured way.",
+      "answer_type": "short-answer"
+    }
+  ]
+}
+```
+
+## Excel 导出
+
+当你要求保存结果时，脚本会在输出目录中生成：
+
+- `full.json`
+- `general_interview.json`
+- `english_interview.json`
+- `professional_written_exam.json`
+- `english_written_exam.json`
+- `retest_pack.xlsx`
+- `retest_pack_memorize.xlsx`
+- `retest_pack_print.xlsx`
+- `run-report.json`
+
+Excel 工作簿固定包含这些 sheet：
+
+- `Overview`
+- `Mandatory Blocks`
+- `General Interview`
+- `English Interview`
+- `Professional Written`
+- `English Written`
+- `Terms`
+- `Run Report`
+
+三个 Excel 文件的用途：
+
+- `retest_pack.xlsx`: 默认通用版
+- `retest_pack_memorize.xlsx`: 更适合背诵和高亮复习
+- `retest_pack_print.xlsx`: 更适合打印和纸质阅读
+
+## 安装依赖
+
+```bash
+python3 -m pip install --user pypdf openpyxl
+```
+
+## 安装 skill
 
 ```bash
 mkdir -p ~/.codex/skills
 ln -s /path/to/economics-retest-paper-splitter ~/.codex/skills/economics-retest-paper-splitter
 ```
 
-如果你是从这个仓库直接使用，把 `/path/to/economics-retest-paper-splitter` 替换为仓库本地路径。
-
-安装后重开一个 Codex 会话，或重启桌面应用以刷新技能列表。
-
-## 触发方式
-
-在对话中显式提到：
+然后重开一个 Codex 会话，使用：
 
 ```text
 $economics-retest-paper-splitter
 ```
 
-例如：
+## 运行方式
+
+### 在 Codex 中调用
 
 ```text
-使用 $economics-retest-paper-splitter 拆解这篇数字经济文献，输出适合复试面试和笔试的 JSON。
+使用 $economics-retest-paper-splitter 将这篇经济学文献拆成适合综合面试、英文面试、专业课笔试和英文笔试的标准化 JSON 与 Excel 结果。
 ```
 
-英文也可以直接这样触发：
+### 直接运行脚本
 
-```text
-Use $economics-retest-paper-splitter to split this economics paper into interview-ready and written-exam-ready JSON.
+```bash
+python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf
 ```
 
-## 输入要求
+常用参数：
 
-优先提供以下任一内容：
-
-- 论文标题 + 摘要
-- 论文摘要 + 关键结论
-- 论文正文节选
-- 完整正文
-
-如果信息不足，它不会硬编，而是先追问：
-
-```text
-请补充摘要或正文内容，以便继续拆解。
+```bash
+python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf --output-dir /path/to/output
+python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf --slug custom-paper-id
+python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf --language 英文文献
+python3 scripts/generate_retest_json.py --input-text "Title: ... Abstract: ..." --stdout-json
 ```
 
-如果无法高置信度判断语言，它会先确认：
+## 示例输入
 
 ```text
-请确认这是一篇中文文献、英文文献，还是中英混合文献？
-```
-
-## Examples
-
-### Example Input
-
-```text
-使用 $economics-retest-paper-splitter 拆解下面这篇文献，输出适合复试面试和笔试的 JSON。
+使用 $economics-retest-paper-splitter 分析下面这篇文献，并生成 full.json、四个 split JSON 和 Excel。
 
 标题：数字基础设施建设与地区创新质量提升
 
 摘要：本文基于 2011—2022 年中国地级市面板数据，考察数字基础设施建设对地区创新质量的影响。研究发现，数字基础设施显著提升地区创新质量，这一作用在东部地区和高人力资本地区更为明显。机制检验表明，数字基础设施主要通过降低信息不对称、改善金融资源配置和促进知识溢出来提升创新质量。进一步分析发现，地方政府数字治理能力越强，数字基础设施对创新质量的促进作用越明显。
 ```
 
-### Example Output Snippet
+## 阻断规则
 
-```json
-{
-  "one_sentence_summary": "文章研究数字基础设施如何通过降低信息不对称、改善资源配置和促进知识溢出来提升地区创新质量。",
-  "interview_useful": [
-    {
-      "label": "机制分析",
-      "core_content": "这篇文章的核心机制可以概括为数字基础设施先改善信息流动和资源匹配，再通过缓解信息不对称、优化金融资源配置和促进知识溢出，最终提升地区创新质量。",
-      "reason_for_interview": "机制是导师最容易继续追问的部分，能体现你是否真正理解论文而不只是记住结论。",
-      "typical_questions": [
-        "为什么数字基础设施会影响创新质量？",
-        "作者识别出的核心机制是什么？"
-      ],
-      "oral_answer_sample": "我理解这篇文章的逻辑是，数字基础设施本身不是直接创造创新，而是先改善信息和资源配置效率，再通过缓解信息不对称和强化知识扩散来提高创新质量。"
-    }
-  ],
-  "written_exam_useful": [
-    {
-      "label": "机制链条",
-      "core_content": "数字基础设施通过降低信息不对称、改善金融资源配置和促进知识溢出三条路径提升地区创新质量。",
-      "reason_for_written_exam": "适合用于简答题和论述题中的机制展开部分。",
-      "question_types": [
-        "简答题",
-        "论述题"
-      ],
-      "exam_expression": "从作用机制看，数字基础设施通过降低信息不对称、改善金融资源配置并促进知识溢出，进而提升地区创新质量。"
-    }
-  ],
-  "overlap_but_rewritten": [
-    {
-      "topic": "数字基础设施影响创新质量的机制",
-      "interview_version": "可以把它理解为先改善信息和资源流动效率，再进一步带动创新质量上升。",
-      "written_version": "数字基础设施主要通过缓解信息不对称、优化资源配置和强化知识溢出提升创新质量。"
-    }
-  ]
-}
-```
-
-## 输出结构
-
-输出为严格 JSON，核心字段包括：
-
-- `paper_info`
-- `language_detect_result`
-- `one_sentence_summary`
-- `interview_useful`
-- `written_exam_useful`
-- `overlap_but_rewritten`
-- `low_priority`
-- `review_outline`
-- `extra`
-- `english_support`
-
-完整结构见 [references/output-schema.json](references/output-schema.json)。
-
-## Downloadable Files
-
-当你明确要求保存结果时，这个技能可以在当前工作区生成 3 个可下载 JSON 文件和 3 个可下载 Excel 文件：
-
-- `output/economics-retest-paper-splitter/<paper-slug>/full.json`
-- `output/economics-retest-paper-splitter/<paper-slug>/interview.json`
-- `output/economics-retest-paper-splitter/<paper-slug>/written_exam.json`
-- `output/economics-retest-paper-splitter/<paper-slug>/retest_pack.xlsx`
-- `output/economics-retest-paper-splitter/<paper-slug>/retest_pack_memorize.xlsx`
-- `output/economics-retest-paper-splitter/<paper-slug>/retest_pack_print.xlsx`
-
-对应 schema：
-
-- 完整版：[references/output-schema.json](references/output-schema.json)
-- 面试版：[references/interview-output-schema.json](references/interview-output-schema.json)
-- 笔试版：[references/written-output-schema.json](references/written-output-schema.json)
-
-推荐直接这样提：
+如果只有标题，没有摘要或正文，项目不会直接生成 JSON，而会返回：
 
 ```text
-使用 $economics-retest-paper-splitter 分析这篇文献，并把结果保存为可下载的 full.json、interview.json、written_exam.json、retest_pack.xlsx、retest_pack_memorize.xlsx 和 retest_pack_print.xlsx。
+请补充摘要或正文内容，以便继续拆解。
 ```
 
-如果你希望完全走本地脚本、避免临场生成不稳定，可以直接运行：
+如果语言无法判断，会先返回：
 
-```bash
-python3 scripts/generate_retest_json.py --input-file /path/to/paper.pdf
+```text
+请确认这是一篇中文文献、英文文献，还是中英混合文献？
 ```
 
-或：
+## 低优先级内容如何处理
 
-```bash
-python3 scripts/generate_retest_json.py --input-text "Title: ... Abstract: ..."
-```
+以下内容优先下沉到 `low_priority`，不会占据主干结构：
 
-附加调试文件：
+- 过细的数据清洗过程
+- 稳健性检验的附录细节
+- 附录级技术推导
+- 对复试口答和卷面帮助较弱的表格信息
 
-- `run-report.json`
+## 回归样例
 
-其中会记录输入类型、生成时间、语言标签、是否使用回退 slug 以及抽取到的摘要长度，方便排查抽取问题。
-
-Excel 工作簿包含这些 sheet：
-
-- `Overview`
-- `Interview`
-- `Written`
-- `Overlap`
-- `Terms`
-- `Run Report`
-
-三个 Excel 文件的用途分别是：
-
-- `retest_pack.xlsx`: 默认通用版
-- `retest_pack_memorize.xlsx`: 更适合背诵和高亮复习
-- `retest_pack_print.xlsx`: 更适合打印和纸质阅读
-
-## Regression Examples
-
-仓库内置了两组成功样例和两组失败样例：
-
-- `examples/english-digital-economics`
-- `examples/chinese-digital-economics`
-- `examples/failure-title-only-english`
-- `examples/failure-title-only-chinese`
-
-运行回归检查：
+仓库内置了成功样例和失败样例，运行：
 
 ```bash
 python3 scripts/check_examples.py
 ```
 
-这会执行两层检查：
+它会检查：
 
-- 结构断言：字段、拆分逻辑、CLI 行为、错误码
-- 快照比对：重新生成样例输出并与 `expected/*.json` 对比
+- 固定 5 模块是否稳定存在
+- 四个通道是否都围绕同一组模块展开
+- split JSON 是否与 full.json 保持一致骨架
+- Excel sheet 结构是否正确
+- 信息不足时是否正确阻断
 
-另外，`examples/failure-low-text-pdf` 记录了低文本 PDF 的预期失败行为说明。
+## 当前版本说明
 
-## 输出示意
+当前实现版本：
 
-```json
-{
-  "one_sentence_summary": "文章研究数字基础设施如何通过降低交易成本和缓解信息不对称促进地区创新。",
-  "interview_useful": [
-    {
-      "label": "机制分析",
-      "core_content": "这篇文章的核心机制可以概括为数字基础设施改善信息流通效率，降低企业搜寻和匹配成本，从而提高创新资源配置效率。",
-      "reason_for_interview": "这是导师最可能追问的部分，决定你是不是只背了结论。",
-      "typical_questions": [
-        "作者认为作用机制是什么？",
-        "为什么数字基础设施会影响创新？"
-      ],
-      "oral_answer_sample": "我理解作者的核心逻辑是，数字基础设施先改善信息传递和资源匹配，再通过降低交易成本和缓解信息不对称，最终提升创新效率。"
-    }
-  ],
-  "written_exam_useful": [
-    {
-      "label": "机制链条",
-      "core_content": "数字基础设施通过降低交易成本、缓解信息不对称和优化资源配置三条路径促进创新。",
-      "reason_for_written_exam": "适合简答题和论述题中的机制展开。",
-      "question_types": [
-        "简答题",
-        "论述题"
-      ],
-      "exam_expression": "从理论机制看，数字基础设施通过降低交易成本、缓解信息不对称并优化创新资源配置，进而提升地区创新水平。"
-    }
-  ]
-}
-```
+- `schema_version = 2.0`
+- `output_version = 2.0.0`
+- `framework = five-mandatory-modules-four-channels`
 
-## 适合开源协作的点
-
-- 规则明确，容易继续扩展
-- 输出 schema 固定，适合接入脚本或知识库
-- 既可单篇使用，也适合批量整理文献
-- 可以继续扩展到更多学科复试场景
-
-如果你觉得这个技能有用，欢迎点一个 Star。这个仓库想解决的是一个很具体但很常见的问题：把“读过文献”变成“能在复试里稳定输出”。
-
-## 仓库结构
-
-```text
-.
-├── SKILL.md
-├── README.md
-├── LICENSE
-├── agents/
-│   └── openai.yaml
-├── scripts/
-│   ├── generate_retest_json.py
-│   └── check_examples.py
-├── examples/
-│   ├── english-digital-economics/
-│   ├── chinese-digital-economics/
-│   ├── failure-title-only-english/
-│   ├── failure-title-only-chinese/
-│   └── failure-low-text-pdf/
-└── references/
-    ├── output-schema.json
-    ├── interview-output-schema.json
-    └── written-output-schema.json
-```
+该版本与旧双通道输出不兼容。
+如果你仍然依赖旧字段 `interview_useful` / `written_exam_useful`，需要按新 schema 适配。
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](./LICENSE).

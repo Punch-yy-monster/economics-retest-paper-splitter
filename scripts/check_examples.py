@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run regression checks against example fixtures and CLI behaviors."""
+"""Run regression checks against standardized four-channel fixtures."""
 
 from __future__ import annotations
 
@@ -18,6 +18,25 @@ SCRIPT = ROOT / "scripts" / "generate_retest_json.py"
 EXAMPLES = ROOT / "examples"
 SUCCESS_FIXTURES = ("english-digital-economics", "chinese-digital-economics")
 FAILURE_FIXTURES = ("failure-title-only-english", "failure-title-only-chinese")
+MANDATORY_MODULES = [
+    "research_background",
+    "research_question",
+    "core_conclusion",
+    "mechanism_analysis",
+    "policy_implication",
+]
+JSON_FILENAMES = (
+    "full.json",
+    "general_interview.json",
+    "english_interview.json",
+    "professional_written_exam.json",
+    "english_written_exam.json",
+)
+EXCEL_FILENAMES = (
+    "retest_pack.xlsx",
+    "retest_pack_memorize.xlsx",
+    "retest_pack_print.xlsx",
+)
 
 
 def run_command(args: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
@@ -33,23 +52,48 @@ def assert_snapshot(generated: Path, expected: Path) -> None:
         raise RuntimeError(f"snapshot mismatch: {generated.name}")
 
 
-def assert_common_structure(full: dict, interview: dict, written: dict) -> None:
-    if full.get("meta", {}).get("schema_version") != "1.0":
-        raise RuntimeError("full.json is missing meta.schema_version=1.0")
-    if "interview_useful" not in full or "written_exam_useful" not in full:
-        raise RuntimeError("full.json must contain both channels")
-    if "written_exam_useful" in interview:
-        raise RuntimeError("interview.json should not contain written_exam_useful")
-    if "interview_useful" in written:
-        raise RuntimeError("written_exam.json should not contain interview_useful")
-    if "oral_sentence_patterns" not in interview["english_support"]:
-        raise RuntimeError("interview.json should keep oral sentence patterns")
-    if "written_sentence_patterns" in interview["english_support"]:
-        raise RuntimeError("interview.json should not keep written sentence patterns")
-    if "written_sentence_patterns" not in written["english_support"]:
-        raise RuntimeError("written_exam.json should keep written sentence patterns")
-    if "oral_sentence_patterns" in written["english_support"]:
-        raise RuntimeError("written_exam.json should not keep oral sentence patterns")
+def assert_channel_modules(items: list[dict], question_key: str, answer_key: str) -> None:
+    modules = [item["module"] for item in items]
+    if modules != MANDATORY_MODULES:
+        raise RuntimeError(f"channel module order mismatch: {modules!r}")
+    for item in items:
+        if not item[question_key] or not item[answer_key]:
+            raise RuntimeError(f"channel item is missing content: {item!r}")
+
+
+def assert_common_structure(full: dict, split_payloads: dict[str, dict]) -> None:
+    meta = full.get("meta", {})
+    if meta.get("schema_version") != "2.0":
+        raise RuntimeError("full.json is missing meta.schema_version=2.0")
+    if meta.get("output_version") != "2.0.0":
+        raise RuntimeError("full.json is missing meta.output_version=2.0.0")
+    if meta.get("framework") != "five-mandatory-modules-four-channels":
+        raise RuntimeError("full.json framework marker is incorrect")
+
+    mandatory_blocks = full.get("mandatory_blocks", {})
+    if list(mandatory_blocks.keys()) != MANDATORY_MODULES:
+        raise RuntimeError("mandatory_blocks should keep the fixed five-module order")
+    for module in MANDATORY_MODULES:
+        if not mandatory_blocks[module]:
+            raise RuntimeError(f"mandatory_blocks[{module}] should not be empty")
+
+    assert_channel_modules(full["general_interview"], "question", "answer")
+    assert_channel_modules(full["english_interview"], "question_en", "answer_en")
+    assert_channel_modules(full["professional_written_exam"], "question", "answer")
+    assert_channel_modules(full["english_written_exam"], "question_en", "answer_en")
+
+    split_expectations = {
+        "general_interview.json": "general_interview",
+        "english_interview.json": "english_interview",
+        "professional_written_exam.json": "professional_written_exam",
+        "english_written_exam.json": "english_written_exam",
+    }
+    for filename, channel_key in split_expectations.items():
+        payload = split_payloads[filename]
+        if payload["mandatory_blocks"] != mandatory_blocks:
+            raise RuntimeError(f"{filename} should reuse full.json mandatory_blocks")
+        if channel_key not in payload:
+            raise RuntimeError(f"{filename} is missing {channel_key}")
 
 
 def assert_example_expectations(example_name: str, full: dict) -> None:
@@ -61,9 +105,8 @@ def assert_example_expectations(example_name: str, full: dict) -> None:
             raise RuntimeError("english example language detection failed")
         if not paper_info["authors"]:
             raise RuntimeError("english example author extraction failed")
-        labels = [item["label"] for item in full["interview_useful"]]
-        if "理论脉络" not in labels:
-            raise RuntimeError("english review example should contain 理论脉络 in interview output")
+        if "成本结构" not in full["mandatory_blocks"]["core_conclusion"]:
+            raise RuntimeError("english review example should emphasize cost structure in core conclusion")
     elif example_name == "chinese-digital-economics":
         if paper_info["title"] != "数据要素流通、平台治理与区域创新":
             raise RuntimeError("chinese example title extraction failed")
@@ -71,9 +114,8 @@ def assert_example_expectations(example_name: str, full: dict) -> None:
             raise RuntimeError("chinese example language detection failed")
         if not {"数据要素流通", "平台治理", "区域创新"}.issubset(set(paper_info["keywords"])):
             raise RuntimeError("chinese example keyword fallback failed")
-        labels = [item["label"] for item in full["interview_useful"]]
-        if "识别策略" not in labels:
-            raise RuntimeError("chinese empirical example should contain 识别策略 in interview output")
+        if "数字治理" not in full["mandatory_blocks"]["policy_implication"] and "制度" not in full["mandatory_blocks"]["policy_implication"]:
+            raise RuntimeError("chinese empirical example should surface policy implications")
 
 
 def run_success_fixture(example_name: str) -> None:
@@ -92,44 +134,44 @@ def run_success_fixture(example_name: str) -> None:
             raise RuntimeError(f"{example_name}: command failed: {result.stdout or result.stderr}")
 
         paths = [Path(line.strip()) for line in result.stdout.splitlines() if line.strip()]
-        if len(paths) != 6:
-            raise RuntimeError(f"{example_name}: expected 6 output paths, got {paths!r}")
+        if len(paths) != 8:
+            raise RuntimeError(f"{example_name}: expected 8 printed output paths, got {paths!r}")
 
         generated_dir = paths[0].parent
-        full_path = generated_dir / "full.json"
-        interview_path = generated_dir / "interview.json"
-        written_path = generated_dir / "written_exam.json"
-        excel_path = generated_dir / "retest_pack.xlsx"
-        memorize_excel_path = generated_dir / "retest_pack_memorize.xlsx"
-        print_excel_path = generated_dir / "retest_pack_print.xlsx"
         report_path = generated_dir / "run-report.json"
         if not report_path.exists():
             raise RuntimeError(f"{example_name}: run-report.json not generated")
-        if not excel_path.exists():
-            raise RuntimeError(f"{example_name}: retest_pack.xlsx not generated")
-        if not memorize_excel_path.exists():
-            raise RuntimeError(f"{example_name}: retest_pack_memorize.xlsx not generated")
-        if not print_excel_path.exists():
-            raise RuntimeError(f"{example_name}: retest_pack_print.xlsx not generated")
 
-        full = load_json(full_path)
-        interview = load_json(interview_path)
-        written = load_json(written_path)
+        full = load_json(generated_dir / "full.json")
+        split_payloads = {filename: load_json(generated_dir / filename) for filename in JSON_FILENAMES if filename != "full.json"}
         report = load_json(report_path)
 
-        assert_common_structure(full, interview, written)
+        assert_common_structure(full, split_payloads)
         assert_example_expectations(example_name, full)
 
         if report["input_type"] not in {"text", "txt"}:
             raise RuntimeError(f"{example_name}: unexpected input_type {report['input_type']}")
         if report["abstract_length"] <= 0:
             raise RuntimeError(f"{example_name}: abstract_length should be positive")
-        for workbook_path in (excel_path, memorize_excel_path, print_excel_path):
-            workbook = load_workbook(workbook_path)
-            if workbook.sheetnames != ["Overview", "Interview", "Written", "Overlap", "Terms", "Run Report"]:
+        if report["output_version"] != "2.0.0":
+            raise RuntimeError(f"{example_name}: unexpected output version {report['output_version']!r}")
+
+        expected_sheets = [
+            "Overview",
+            "Mandatory Blocks",
+            "General Interview",
+            "English Interview",
+            "Professional Written",
+            "English Written",
+            "Terms",
+            "Run Report",
+        ]
+        for workbook_name in EXCEL_FILENAMES:
+            workbook = load_workbook(generated_dir / workbook_name)
+            if workbook.sheetnames != expected_sheets:
                 raise RuntimeError(f"{example_name}: unexpected Excel sheet names {workbook.sheetnames!r}")
 
-        for filename in ("full.json", "interview.json", "written_exam.json"):
+        for filename in JSON_FILENAMES:
             assert_snapshot(generated_dir / filename, expected_dir / filename)
 
 
@@ -156,8 +198,8 @@ def run_cli_checks() -> None:
         if stdout_result.returncode != 0:
             raise RuntimeError(f"stdout-json check failed: {stdout_result.stdout or stdout_result.stderr}")
         stdout_json = json.loads(stdout_result.stdout)
-        if stdout_json["paper_info"]["language"] != "中文文献":
-            raise RuntimeError("--stdout-json should return valid full JSON")
+        if list(stdout_json["mandatory_blocks"].keys()) != MANDATORY_MODULES:
+            raise RuntimeError("--stdout-json should keep fixed mandatory blocks")
         if (tmpdir / "output").exists():
             raise RuntimeError("--stdout-json should not create output directory")
 

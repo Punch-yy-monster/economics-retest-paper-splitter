@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate stable retest JSON outputs from a paper text or PDF."""
+"""Generate standardized four-channel retest outputs from a paper text or PDF."""
 
 from __future__ import annotations
 
@@ -31,14 +31,79 @@ MIN_NON_EMPTY_PAGE_RATIO = 0.2
 
 ROOT = Path(__file__).resolve().parents[1]
 FULL_SCHEMA_PATH = ROOT / "references" / "output-schema.json"
-INTERVIEW_SCHEMA_PATH = ROOT / "references" / "interview-output-schema.json"
-WRITTEN_SCHEMA_PATH = ROOT / "references" / "written-output-schema.json"
+GENERAL_SCHEMA_PATH = ROOT / "references" / "general-interview-output-schema.json"
+ENGLISH_INTERVIEW_SCHEMA_PATH = ROOT / "references" / "english-interview-output-schema.json"
+PROFESSIONAL_WRITTEN_SCHEMA_PATH = ROOT / "references" / "professional-written-output-schema.json"
+ENGLISH_WRITTEN_SCHEMA_PATH = ROOT / "references" / "english-written-output-schema.json"
 
 ALLOWED_LANGUAGES = {"中文文献", "英文文献", "中英混合文献"}
-OUTPUT_FILENAMES = ("full.json", "interview.json", "written_exam.json")
-EXCEL_FILENAME = "retest_pack.xlsx"
-MEMORIZE_EXCEL_FILENAME = "retest_pack_memorize.xlsx"
-PRINT_EXCEL_FILENAME = "retest_pack_print.xlsx"
+
+OUTPUT_VERSION = "2.0.0"
+FRAMEWORK_NAME = "five-mandatory-modules-four-channels"
+
+MANDATORY_MODULES = [
+    "research_background",
+    "research_question",
+    "core_conclusion",
+    "mechanism_analysis",
+    "policy_implication",
+]
+MODULE_LABELS = {
+    "research_background": "研究背景",
+    "research_question": "研究问题",
+    "core_conclusion": "核心结论",
+    "mechanism_analysis": "机制分析",
+    "policy_implication": "政策启示",
+}
+MODULE_QUESTIONS_CN = {
+    "research_background": "请用口头方式概括这篇论文的研究背景。",
+    "research_question": "这篇论文的核心研究问题是什么？",
+    "core_conclusion": "这篇论文最重要的结论是什么？",
+    "mechanism_analysis": "作者认为这一结果是通过什么机制产生的？",
+    "policy_implication": "这篇论文对现实政策有什么启示？",
+}
+MODULE_QUESTIONS_EN_INTERVIEW = {
+    "research_background": "Why is this topic worth studying in the first place?",
+    "research_question": "What is the central research question of the paper?",
+    "core_conclusion": "What is the main conclusion of the paper?",
+    "mechanism_analysis": "What mechanism does the author use to explain the result?",
+    "policy_implication": "What policy relevance do you see in this paper?",
+}
+MODULE_QUESTIONS_CN_WRITTEN = {
+    "research_background": "请概括本文的研究背景。",
+    "research_question": "请说明本文的核心研究问题。",
+    "core_conclusion": "请概括本文的核心结论。",
+    "mechanism_analysis": "请分析本文的作用机制。",
+    "policy_implication": "请说明本文的政策启示。",
+}
+MODULE_QUESTIONS_EN_WRITTEN = {
+    "research_background": "Summarize the research background of the paper.",
+    "research_question": "State the central research question of the paper.",
+    "core_conclusion": "Summarize the core conclusion of the paper.",
+    "mechanism_analysis": "Explain the mechanism emphasized in the paper.",
+    "policy_implication": "Discuss the policy implication of the paper.",
+}
+MODULE_WHY_MATTERS = {
+    "research_background": "研究背景决定你能否先把论文讲顺，避免一开口就进入细节。",
+    "research_question": "研究问题是导师判断你是否真正抓住论文主线的第一步。",
+    "core_conclusion": "核心结论是复试中最容易被追问和要求压缩表达的部分。",
+    "mechanism_analysis": "机制分析能体现你有没有从结论上升到解释层面。",
+    "policy_implication": "政策启示可以把论文理解和现实问题联系起来，提升回答完整性。",
+}
+WRITTEN_ANSWER_TYPES_CN = {
+    "research_background": "简答题",
+    "research_question": "简答题",
+    "core_conclusion": "简答题",
+    "mechanism_analysis": "论述题",
+    "policy_implication": "论述题",
+}
+WRITTEN_ANSWER_TYPES_EN = {
+    "research_background": "short-answer",
+    "research_question": "short-answer",
+    "core_conclusion": "short-answer",
+    "mechanism_analysis": "analytical-response",
+    "policy_implication": "analytical-response",
+}
 
 FIELD_KEYWORDS = {
     "数字经济学": [
@@ -92,6 +157,12 @@ FIELD_KEYWORDS = {
         "微观",
     ],
 }
+FIELD_ENGLISH = {
+    "数字经济学": "digital economics",
+    "宏观经济学": "macroeconomics",
+    "微观经济学": "microeconomics",
+    "相关经济学交叉方向": "interdisciplinary economics",
+}
 
 PAPER_TYPE_KEYWORDS = {
     "review": [
@@ -111,7 +182,6 @@ PAPER_TYPE_KEYWORDS = {
         "difference-in-differences",
         "did",
         "regression",
-        "data",
         "sample",
         "based on",
         "基于",
@@ -162,7 +232,7 @@ KEYWORD_FALLBACKS = {
     "数字经济学": [
         "digital economics",
         "digital technology",
-        "platform economics",
+        "platform governance",
         "data",
         "privacy",
     ],
@@ -195,11 +265,54 @@ POLICY_TERMS = {
     "copyright": "版权治理",
     "discrimination": "反歧视",
     "reputation": "声誉机制",
-    "platform": "平台规则",
+    "platform": "平台治理",
     "net neutrality": "网络中立",
     "governance": "平台治理",
     "regulation": "监管规则",
     "data property": "数据产权",
+}
+
+TERM_TRANSLATIONS = {
+    "数字经济": "digital economics",
+    "数字技术": "digital technology",
+    "平台治理": "platform governance",
+    "数据要素流通": "data factor circulation",
+    "区域创新": "regional innovation",
+    "创新绩效": "innovation performance",
+    "数字基础设施": "digital infrastructure",
+    "隐私保护": "privacy protection",
+    "知识溢出": "knowledge spillovers",
+    "信息不对称": "information asymmetry",
+    "资源配置": "resource allocation",
+    "数据产权": "data property rights",
+    "网络中立": "net neutrality",
+    "版权治理": "copyright governance",
+    "监管规则": "regulatory rules",
+    "搜索成本": "search costs",
+    "复制成本": "replication costs",
+    "运输成本": "transportation costs",
+    "追踪成本": "tracking costs",
+    "验证成本": "verification costs",
+    "宏观经济学": "macroeconomics",
+    "微观经济学": "microeconomics",
+    "数字经济学": "digital economics",
+    "相关经济学交叉方向": "interdisciplinary economics",
+}
+TERM_EXPLANATIONS = {
+    "数字经济": "强调数字技术如何改变资源配置、交易成本和市场组织方式。",
+    "平台治理": "指平台规则、激励设计与责任分配的治理安排。",
+    "数据要素流通": "指数据在不同主体之间的获取、流动、交易和使用过程。",
+    "区域创新": "强调地区层面的创新产出、创新质量与创新效率变化。",
+    "数字基础设施": "指支撑数字化生产、交易与治理的网络和算力基础。",
+    "信息不对称": "指交易双方掌握的信息不对等，从而影响决策和资源配置。",
+    "知识溢出": "指知识扩散到其他主体并产生外部收益的过程。",
+    "资源配置": "指资本、劳动、数据等资源在不同部门和主体之间的配置效率。",
+    "搜索成本": "指为获取信息、比较对象和寻找交易匹配所付出的成本。",
+    "复制成本": "指复制信息产品或数字产品的边际成本。",
+    "运输成本": "指商品、服务或信息在空间上转移的成本。",
+    "追踪成本": "指识别、记录和监测交易行为及用户行为的成本。",
+    "验证成本": "指确认交易对象、信息真实性和履约情况的成本。",
+    "数字经济学": "研究数字技术和数据要素如何改变经济活动、市场结构与治理安排。",
 }
 
 EXPLICIT_TITLE_PATTERNS = [
@@ -232,6 +345,17 @@ CHINESE_SECTION_HEADINGS = {
     "conclusion": {"结论", "研究结论", "结语", "总结"},
     "references": {"参考文献"},
 }
+
+PRINTED_OUTPUTS = [
+    "full.json",
+    "general_interview.json",
+    "english_interview.json",
+    "professional_written_exam.json",
+    "english_written_exam.json",
+    "retest_pack.xlsx",
+    "retest_pack_memorize.xlsx",
+    "retest_pack_print.xlsx",
+]
 
 
 @dataclass
@@ -278,7 +402,7 @@ class PaperSections:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Generate retest JSON outputs from a paper.")
+    parser = argparse.ArgumentParser(description="Generate standardized retest outputs from a paper.")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--input-file", type=Path, help="Path to a PDF, TXT, or MD file.")
     group.add_argument("--input-text", help="Inline text content.")
@@ -372,7 +496,6 @@ def detect_language(text: str, title_hint: str = "", abstract_hint: str = "", fo
 
     priority_text = clean_text("\n".join(part for part in [title_hint, abstract_hint] if part))
     body_sample = clean_text(text[:12000])
-
     priority_chinese, priority_latin = score(priority_text)
     body_chinese, body_latin = score(body_sample)
 
@@ -537,7 +660,7 @@ def extract_abstract(text: str, language: str) -> str:
 
     paragraphs = [paragraph.strip() for paragraph in text.split("\n\n") if paragraph.strip()]
     if paragraphs:
-        return clean_text(paragraphs[0])[:2000]
+        return clean_text(paragraphs[0])[:2400]
     return ""
 
 
@@ -581,14 +704,14 @@ def extract_introduction(text: str, language: str) -> str:
             CHINESE_SECTION_HEADINGS["conclusion"] | CHINESE_SECTION_HEADINGS["references"],
             language,
         )
-        return intro[:2000]
+        return intro[:2200]
     intro = extract_section_block(
         text,
         ENGLISH_SECTION_HEADINGS["introduction"],
         ENGLISH_SECTION_HEADINGS["conclusion"] | ENGLISH_SECTION_HEADINGS["references"],
         "英文文献",
     )
-    return intro[:2000]
+    return intro[:2200]
 
 
 def split_sentences(text: str, language: str) -> list[str]:
@@ -598,8 +721,7 @@ def split_sentences(text: str, language: str) -> list[str]:
         parts = re.split(r"(?<=[。！？；])", text)
     else:
         parts = re.split(r"(?<=[.!?])\s+", text)
-    sentences = [clean_text(part) for part in parts if clean_text(part)]
-    return sentences
+    return [clean_text(part) for part in parts if clean_text(part)]
 
 
 def determine_field(title: str, abstract: str, conclusion: str) -> str:
@@ -702,538 +824,408 @@ def detect_paper_type(title: str, abstract: str, conclusion: str, text: str) -> 
     return best if scores[best] > 0 else "empirical"
 
 
-def build_topic_summary(title: str, metadata: PaperMetadata, sections: PaperSections, cost_terms: list[str]) -> str:
-    if metadata.paper_type == "review":
-        mechanism = "、".join(cost_terms) if cost_terms else "关键成本下降"
-        return f"本文以综述方式梳理《{title}》所涉及的数字经济研究，并将核心变化归结为{mechanism}等成本结构重塑。"
-    if metadata.paper_type == "empirical":
-        lead = sections.abstract_sentences[0] if sections.abstract_sentences else "文章基于数据检验数字化变量对经济结果的影响。"
-        return f"本文是一篇实证研究，核心关注点是：{lead}"
-    if metadata.paper_type == "theoretical":
-        return f"本文是一篇理论导向研究，重点讨论《{title}》所涉及机制如何在不同假设下影响经济结果。"
-    return f"本文围绕《{title}》展开政策与治理分析，重点讨论数字化情境下规则设计与经济结果之间的关系。"
-
-
 def chinese_anchor_from_english(english_sentence: str, fallback: str) -> str:
     if re.search(r"[\u4e00-\u9fff]", english_sentence):
         return english_sentence
     lowered = english_sentence.lower()
-    if "search" in lowered:
+    if "search" in lowered and "cost" in lowered:
         return "文章强调搜索成本下降会改变信息比较、匹配效率和价格形成。"
+    if "cost" in lowered:
+        return "文章强调数字化会通过重塑关键经济成本结构来改变市场行为和经济结果。"
     if "privacy" in lowered:
         return "文章指出隐私与数据使用边界会直接影响数字市场的运行规则。"
     if "productivity" in lowered:
         return "文章强调数字技术对生产率的影响存在明显异质性，并取决于组织能力。"
+    if "policy" in lowered or "regulation" in lowered:
+        return "文章提示数字经济研究的政策含义主要体现在监管、治理与制度边界上。"
+    if "review" in lowered or "literature" in lowered:
+        return "文章通过综述方式梳理相关文献，并尝试提炼统一分析框架。"
     return fallback
 
 
-def pick_background(metadata: PaperMetadata, sections: PaperSections) -> str:
-    if metadata.language == "中文文献" and sections.abstract_sentences:
-        return sections.abstract_sentences[0]
-    if metadata.paper_type == "review":
-        return "文章的出发点是解释数字技术为什么会系统性改变经济活动，而不是把数字经济当成完全独立的新理论。"
-    if metadata.paper_type == "empirical":
-        return "文章的出发点是检验数字化变量是否真实影响了某类经济结果，以及这种影响通过哪些机制发生。"
-    if metadata.paper_type == "theoretical":
-        return "文章的出发点是通过模型化分析澄清数字化情境下的关键机制和边界条件。"
-    return "文章的出发点是讨论数字化带来的效率提升与制度治理之间如何形成新的政策张力。"
+def field_to_english(field: str) -> str:
+    return FIELD_ENGLISH.get(field, "economics")
 
 
-def pick_conclusion(metadata: PaperMetadata, sections: PaperSections) -> str:
-    if metadata.language == "中文文献" and sections.conclusion_sentences:
-        return sections.conclusion_sentences[0]
-    if metadata.language == "英文文献" and sections.conclusion_sentences:
-        return chinese_anchor_from_english(
-            sections.conclusion_sentences[0],
-            "文章最终强调数字化会重塑经济成本结构，但真实效应取决于组织、制度与平台规则。",
-        )
-    if metadata.paper_type == "review":
-        return "文章最终强调，数字经济的很多现象仍可用标准经济学解释，但必须把注意力放在成本结构变化上。"
-    if metadata.paper_type == "empirical":
-        return "文章最终强调，数字化变量对经济结果的影响真实存在，但强度和方向受机制条件与样本异质性影响。"
-    if metadata.paper_type == "theoretical":
-        return "文章最终强调，理论结论依赖关键假设设定，因此需要注意模型边界。"
-    return "文章最终强调，数字经济政策不能只看效率提升，还要兼顾制度约束与治理后果。"
+def module_label(module: str) -> str:
+    return MODULE_LABELS[module]
 
 
-def pick_method_phrase(metadata: PaperMetadata, sections: PaperSections) -> str:
-    abstract = sections.abstract.lower()
-    if metadata.paper_type == "review":
-        return "通过系统梳理相关研究构建统一分析框架"
-    if metadata.paper_type == "empirical":
-        if any(token in abstract for token in ["panel", "dataset", "sample", "基于", "面板数据", "样本"]):
-            return "基于样本数据开展实证识别"
-        return "通过经验数据检验关键变量之间的关系"
-    if metadata.paper_type == "theoretical":
-        return "通过模型设定与机制推演展开分析"
-    return "围绕政策规则与制度安排进行分析评估"
+def pick_sentence(sentences: list[str], patterns: list[str]) -> str:
+    for sentence in sentences:
+        lowered = sentence.lower()
+        if any(pattern in lowered for pattern in patterns):
+            return clean_text(sentence)
+    return ""
 
 
-def build_interview_useful(metadata: PaperMetadata, sections: PaperSections, cost_terms: list[str], policy_topics: list[str]) -> list[dict[str, Any]]:
-    mechanism_line = "、".join(cost_terms) if cost_terms else "关键成本变化"
-    policy_line = "、".join(policy_topics) if policy_topics else "平台治理、隐私保护与制度约束"
-    background = pick_background(metadata, sections)
-    conclusion = pick_conclusion(metadata, sections)
-    method_phrase = pick_method_phrase(metadata, sections)
+def inferred_text(text: str) -> str:
+    return f"原文未充分展开，根据摘要/正文可推断为：{text}"
 
-    common = [
-        {
-            "label": "研究背景",
-            "core_content": background,
-            "reason_for_interview": "适合开场交代文献切入点，帮助快速建立主线。",
-            "typical_questions": ["这篇文章为什么值得研究？", "作者关注的现实背景是什么？"],
-            "oral_answer_sample": f"我理解这篇文章的背景是：{background}",
-        },
-        {
-            "label": "研究问题",
-            "core_content": f"本文核心要回答的是：在{metadata.field}语境下，数字化条件变化如何影响经济行为、组织方式与制度安排。",
-            "reason_for_interview": "适合把文章主线压缩成一句清晰表述。",
-            "typical_questions": ["这篇文章到底在研究什么？", "如果一句话概括这篇文献，你会怎么说？"],
-            "oral_answer_sample": "如果一句话概括，我会说作者是在讨论数字化条件变化如何重塑经济运行逻辑。",
-        },
-    ]
 
-    if metadata.paper_type == "review":
-        type_specific = [
-            {
-                "label": "理论脉络",
-                "core_content": f"文章把分散的数字经济研究归到同一框架下，主线是{mechanism_line}下降如何改变市场、平台和福利结果。",
-                "reason_for_interview": "综述文献最适合从理论脉络切入，能体现你的结构化理解。",
-                "typical_questions": ["这篇综述是怎么组织文献的？", "它的统一框架是什么？"],
-                "oral_answer_sample": f"我认为这篇文章最有价值的地方，是把很多零散研究统一到{mechanism_line}变化这条主线上。",
-            },
-            {
-                "label": "文献贡献",
-                "core_content": "文章的贡献不在于提出一个全新理论，而在于提供了一个可迁移的解释框架，让不同领域的数字经济研究可以放进同一套逻辑中理解。",
-                "reason_for_interview": "适合回答“贡献是什么”这类评价问题。",
-                "typical_questions": ["这篇文章最大的贡献是什么？", "为什么它具有代表性？"],
-                "oral_answer_sample": "它最大的贡献不是提出新模型，而是把数字经济研究组织成一套可复用的分析框架。",
-            },
-        ]
-    elif metadata.paper_type == "empirical":
-        type_specific = [
-            {
-                "label": "识别策略",
-                "core_content": f"文章主要是{method_phrase}，重点在于说明数字化变量与结果变量之间的关系不是简单相关，而是尽量靠近因果识别。",
-                "reason_for_interview": "实证论文面试经常会追问“你怎么理解它的识别思路”。",
-                "typical_questions": ["这篇文章是怎么做实证识别的？", "为什么作者的结论不只是相关性？"],
-                "oral_answer_sample": f"从实证角度看，这篇文章不是只描述现象，而是希望通过{method_phrase}去识别更可信的因果关系。",
-            },
-            {
-                "label": "异质性与机制",
-                "core_content": f"文章不仅讨论总体效应，还会继续问这种影响在不同样本、不同条件下是否有差异，并通过{mechanism_line}等路径解释这种差异从何而来。",
-                "reason_for_interview": "适合导师进一步追问机制检验和异质性分析。",
-                "typical_questions": ["文章有没有做异质性分析？", "机制检验告诉了我们什么？"],
-                "oral_answer_sample": "我觉得这篇文章比较完整的地方在于，它不仅给出平均效应，还会继续追问在哪些条件下效果更强，以及这种差异背后的机制是什么。",
-            },
-        ]
-    elif metadata.paper_type == "theoretical":
-        type_specific = [
-            {
-                "label": "模型假设",
-                "core_content": "文章的核心在于设定关键假设，再观察这些假设变化如何影响均衡结果，因此理解它时最重要的是抓住假设和机制之间的对应关系。",
-                "reason_for_interview": "理论论文面试最容易被追问模型假设和边界。",
-                "typical_questions": ["这篇文章最关键的假设是什么？", "如果放松假设，结论会不会变？"],
-                "oral_answer_sample": "我理解理论论文时会先抓假设，因为它的结论本质上是由假设决定的。",
-            },
-            {
-                "label": "理论边界",
-                "core_content": "文章的理论价值在于澄清机制，但它的外部适用性取决于现实世界是否满足这些核心假设。",
-                "reason_for_interview": "适合回答理论论文的局限性与适用范围。",
-                "typical_questions": ["这个理论结果在现实里一定成立吗？", "它的边界在哪里？"],
-                "oral_answer_sample": "我会把它理解成一种机制澄清工具，而不是对所有现实场景都自动成立的结论。",
-            },
-        ]
+def infer_background(metadata: PaperMetadata, sections: PaperSections) -> str:
+    if metadata.language == "中文文献":
+        direct = pick_sentence(sections.intro_sentences + sections.abstract_sentences, ["背景", "随着", "近年来", "数字", "平台", "数据"])
+        if direct:
+            return direct
+        if sections.abstract_sentences:
+            return sections.abstract_sentences[0]
     else:
-        type_specific = [
-            {
-                "label": "制度背景",
-                "core_content": f"文章的重点不只是市场行为本身，而是数字化条件下的制度环境如何约束或放大经济结果，特别是{policy_line}等问题。",
-                "reason_for_interview": "政策型文献适合从制度背景和治理目标切入。",
-                "typical_questions": ["这篇文章关注的政策问题是什么？", "为什么数字经济研究会落到治理问题上？"],
-                "oral_answer_sample": f"我觉得这篇文章最核心的现实意义，是把数字经济放到{policy_line}这些制度问题下重新理解。",
-            },
-            {
-                "label": "政策评价",
-                "core_content": "文章强调，政策设计不能只追求效率提升，还要兼顾实施约束、治理成本和分配结果。",
-                "reason_for_interview": "适合对接现实政策讨论。",
-                "typical_questions": ["作者对政策设计有什么判断？", "它的政策含义是什么？"],
-                "oral_answer_sample": "我理解作者不是只强调效率，而是提醒我们数字政策往往带有明显的治理权衡。",
-            },
-        ]
+        if sections.abstract_sentences:
+            return chinese_anchor_from_english(
+                sections.abstract_sentences[0],
+                "文章关注数字化条件变化如何重塑经济活动与制度环境。",
+            )
 
-    tail = [
-        {
-            "label": "核心结论",
-            "core_content": conclusion,
-            "reason_for_interview": "适合回答“文章最重要的发现是什么”。",
-            "typical_questions": ["作者最后得出了什么判断？", "文章的总体结论是什么？"],
-            "oral_answer_sample": f"我觉得文章最后最重要的结论是：{conclusion}",
-        },
-        {
-            "label": "政策启示",
-            "core_content": f"从政策层面看，文章提示需要重点关注{policy_line}等问题，因为数字技术带来效率提升的同时，也会放大治理与规则设计的重要性。",
-            "reason_for_interview": "适合把文献与现实政策问题连接起来。",
-            "typical_questions": ["这篇文章有哪些政策含义？", "为什么数字经济研究会走向制度治理问题？"],
-            "oral_answer_sample": f"我觉得这篇文章一个很强的现实启示是，数字经济不能只看效率，还要看{policy_line}这些制度问题。",
-        },
-        {
-            "label": "局限性",
-            "core_content": (
-                "作为综述，它更强于框架整合，弱于对单个机制的严格识别。"
-                if metadata.paper_type == "review"
-                else "文章虽然给出了明确结论，但对机制边界、外部有效性或制度条件的讨论仍有继续展开的空间。"
-            ),
-            "reason_for_interview": "适合回答文献评价题，避免只说优点。",
-            "typical_questions": ["这篇文章有什么不足？", "你觉得它还有哪些没有展开的地方？"],
-            "oral_answer_sample": "如果从文献评价角度看，我会说它的强项很明确，但仍然有一些边界条件和外部适用性问题值得继续讨论。",
-        },
-        {
-            "label": "延伸研究方向",
-            "core_content": "后续可以继续追问新技术条件下是否出现新的机制、同一机制在不同制度环境中为何会有不同表现，以及现实治理规则如何影响数字化效应的最终落地。",
-            "reason_for_interview": "适合回答“如果继续研究你会怎么做”。",
-            "typical_questions": ["如果往下做研究，你会怎么延伸？", "这篇文章对今天的研究还有哪些启发？"],
-            "oral_answer_sample": "如果往后延伸，我会继续问哪些条件会改变机制强弱，以及现实治理规则为什么会让不同地区出现不同结果。",
-        },
-    ]
-    return common + type_specific + tail
+    fallback = {
+        "review": "文章试图解释数字技术为什么会系统性改变经济活动，而不是把数字经济当成与传统经济学完全割裂的新问题。",
+        "empirical": "文章关注某一数字化因素是否真实影响了经济结果，以及这种影响为何会在不同条件下发生差异。",
+        "theoretical": "文章试图通过模型分析澄清数字化情境下的关键机制和边界条件。",
+        "policy": "文章关注数字化带来的效率提升与制度治理之间如何形成新的政策张力。",
+    }[metadata.paper_type]
+    return inferred_text(fallback)
 
 
-def build_written_exam_useful(metadata: PaperMetadata, sections: PaperSections, cost_terms: list[str], policy_topics: list[str]) -> list[dict[str, Any]]:
-    mechanism_line = "、".join(cost_terms) if cost_terms else "搜索成本、交易成本与信息不对称成本"
-    policy_line = "、".join(policy_topics) if policy_topics else "平台治理、隐私保护与制度监管"
+def infer_question(metadata: PaperMetadata, sections: PaperSections) -> str:
+    if metadata.language == "中文文献":
+        for sentence in sections.abstract_sentences + sections.intro_sentences:
+            if any(token in sentence for token in ["考察", "研究", "讨论", "分析", "检验", "评估"]):
+                return sentence
+    else:
+        direct = pick_sentence(sections.abstract_sentences + sections.intro_sentences, ["examines", "studies", "asks whether", "investigates"])
+        if direct:
+            return chinese_anchor_from_english(
+                direct,
+                f"文章围绕《{metadata.title}》所对应的问题，讨论数字化变化如何影响经济活动。",
+            )
+
+    fallback = {
+        "review": f"文章的核心问题是：如何用统一的经济学框架解释《{metadata.title}》所涉及的数字化现象。",
+        "empirical": "文章的核心问题是：特定数字化因素是否显著影响目标经济结果，以及这种影响是否具有异质性。",
+        "theoretical": "文章的核心问题是：在给定假设下，数字化变化会通过什么机制改变行为选择与均衡结果。",
+        "policy": "文章的核心问题是：制度规则和治理安排如何影响数字经济中的效率、创新与风险分配。",
+    }[metadata.paper_type]
+    return inferred_text(fallback)
+
+
+def infer_conclusion(metadata: PaperMetadata, sections: PaperSections) -> str:
+    if metadata.language == "中文文献":
+        direct = pick_sentence(sections.conclusion_sentences + sections.abstract_sentences, ["研究发现", "结果表明", "说明", "发现", "表明"])
+        if direct:
+            return direct
+    else:
+        direct = pick_sentence(sections.conclusion_sentences + sections.abstract_sentences, ["find", "show", "conclude", "core theme"])
+        if direct:
+            return chinese_anchor_from_english(
+                direct,
+                "文章认为数字化会显著改变相关经济结果，但作用强度取决于制度环境和行为约束。",
+            )
+
+    fallback = {
+        "review": "文章认为，数字经济的许多现象仍可用标准经济学解释，但分析重点必须转向成本结构变化。",
+        "empirical": "文章认为，数字化因素会显著影响目标经济结果，但影响强度受异质性和制度条件约束。",
+        "theoretical": "文章认为，理论结论依赖关键假设，因此结论的外部适用性需要结合现实条件判断。",
+        "policy": "文章认为，数字经济政策不能只追求效率，还需要兼顾制度约束、治理成本与分配后果。",
+    }[metadata.paper_type]
+    return inferred_text(fallback)
+
+
+def infer_mechanism(metadata: PaperMetadata, sections: PaperSections, cost_terms: list[str]) -> str:
+    if metadata.language == "中文文献":
+        direct = pick_sentence(sections.abstract_sentences + sections.conclusion_sentences, ["机制", "通过", "路径", "信息不对称", "知识溢出", "资源配置"])
+        if direct:
+            return direct
+    else:
+        direct = pick_sentence(sections.abstract_sentences + sections.conclusion_sentences, ["through", "mechanism", "cost", "information", "spillover"])
+        if direct:
+            return chinese_anchor_from_english(
+                direct,
+                "文章强调数字化主要通过改变信息、匹配与治理成本来影响经济结果。",
+            )
+
+    if cost_terms:
+        return inferred_text(f"文章可被理解为：数字化通过改变{'、'.join(cost_terms)}等关键成本，进而改变资源配置、激励结构与市场结果。")
+
+    fallback = {
+        "review": "文章可被理解为：数字化通过改变信息获取、复制传播和交易验证等成本，重新塑造市场与组织行为。",
+        "empirical": "文章可被理解为：数字化因素通过缓解信息不对称、改善资源配置或强化知识扩散来影响结果变量。",
+        "theoretical": "文章可被理解为：关键假设变化会通过激励结构调整传导到行为选择和均衡结果。",
+        "policy": "文章可被理解为：制度规则通过改变约束条件和治理激励来影响市场行为与政策绩效。",
+    }[metadata.paper_type]
+    return inferred_text(fallback)
+
+
+def infer_policy(metadata: PaperMetadata, sections: PaperSections, policy_topics: list[str]) -> str:
+    if metadata.language == "中文文献":
+        direct = pick_sentence(sections.abstract_sentences + sections.conclusion_sentences, ["政策", "监管", "制度", "启示", "隐私", "版权"])
+        if direct:
+            return direct
+        direct = pick_sentence(sections.abstract_sentences + sections.conclusion_sentences, ["治理"])
+        if direct:
+            return direct
+    else:
+        direct = pick_sentence(sections.abstract_sentences + sections.conclusion_sentences, ["policy", "regulation", "privacy", "copyright", "net neutrality"])
+        if direct:
+            return chinese_anchor_from_english(
+                direct,
+                "文章的政策含义主要落在平台治理、隐私保护和制度规则设计上。",
+            )
+        direct = pick_sentence(sections.abstract_sentences + sections.conclusion_sentences, ["governance"])
+        if direct:
+            return chinese_anchor_from_english(
+                direct,
+                "文章的政策含义主要落在平台治理、隐私保护和制度规则设计上。",
+            )
+
+    if policy_topics:
+        return inferred_text(f"文章提示政策设计需要重点关注{'、'.join(policy_topics)}等制度问题，并兼顾效率与治理目标。")
+
+    fallback = {
+        "review": "文章提示政策讨论不能停留在技术扩散层面，而应同步处理治理、规则与市场边界。",
+        "empirical": "文章提示政策效果依赖制度环境，因此推进数字化时要重视治理能力、监管规则和配套制度。",
+        "theoretical": "文章提示政策判断不能脱离假设条件，需要结合现实制度和实施约束解释理论结论。",
+        "policy": "文章提示政策设计必须平衡创新激励、治理成本和风险约束，不能单看效率提升。",
+    }[metadata.paper_type]
+    return inferred_text(fallback)
+
+
+def build_mandatory_blocks(metadata: PaperMetadata, sections: PaperSections, cost_terms: list[str], policy_topics: list[str]) -> dict[str, str]:
+    return {
+        "research_background": infer_background(metadata, sections),
+        "research_question": infer_question(metadata, sections),
+        "core_conclusion": infer_conclusion(metadata, sections),
+        "mechanism_analysis": infer_mechanism(metadata, sections, cost_terms),
+        "policy_implication": infer_policy(metadata, sections, policy_topics),
+    }
+
+
+def build_one_sentence_summary(metadata: PaperMetadata, mandatory_blocks: dict[str, str]) -> str:
+    question = mandatory_blocks["research_question"].replace("原文未充分展开，根据摘要/正文可推断为：", "")
+    conclusion = mandatory_blocks["core_conclusion"].replace("原文未充分展开，根据摘要/正文可推断为：", "")
     if metadata.paper_type == "review":
-        return [
-            {
-                "label": "核心概念定义",
-                "core_content": "数字经济研究的核心不在于完全创造新理论，而在于分析数字化如何通过改变关键经济成本重塑经济活动。",
-                "reason_for_written_exam": "适合名词解释和总括性简答题。",
-                "question_types": ["名词解释", "简答题"],
-                "exam_expression": "所谓数字经济，本质上是数字技术改变信息处理方式并进一步重塑关键经济成本结构的过程。",
-            },
-            {
-                "label": "理论脉络",
-                "core_content": f"文章以{mechanism_line}为主线整合文献，说明搜索理论、价格理论、声誉理论与组织理论如何共同解释数字化现象。",
-                "reason_for_written_exam": "适合综述题和理论来源题。",
-                "question_types": ["简答题", "论述题"],
-                "exam_expression": f"从理论脉络看，文章并未脱离传统经济学，而是在既有理论框架下，围绕{mechanism_line}等成本变化重构数字经济解释体系。",
-            },
-            {
-                "label": "理论框架",
-                "core_content": f"全文的分析框架可概括为“数字化 -> 成本下降 -> 市场与组织方式变化 -> 福利与治理结果变化”，其中重点成本包括{mechanism_line}。",
-                "reason_for_written_exam": "适合论述题搭建总分结构。",
-                "question_types": ["简答题", "论述题"],
-                "exam_expression": "文章构建了一个基于成本变化的统一框架，用以解释数字化对市场、平台、企业和消费者的系统性影响。",
-            },
-            {
-                "label": "规范化结论表述",
-                "core_content": "数字经济的关键不在于技术标签本身，而在于技术通过成本结构重塑改变了既有经济机制。",
-                "reason_for_written_exam": "适合作为综述类题目结尾总结。",
-                "question_types": ["论述题"],
-                "exam_expression": "总体而言，数字经济的理论价值在于将分散现象统一还原为成本结构变化所引致的市场与组织重构。",
-            },
-            {
-                "label": "政策背景",
-                "core_content": f"文章涉及的政策背景主要包括{policy_line}，反映数字经济研究天然带有制度与治理维度。",
-                "reason_for_written_exam": "适合联系制度背景作答。",
-                "question_types": ["简答题", "论述题"],
-                "exam_expression": f"在政策层面，数字经济并非单纯技术扩散问题，还涉及{policy_line}等制度安排。",
-            },
-            {
-                "label": "高频术语",
-                "core_content": "digital economics, search costs, replication costs, transportation costs, tracking costs, verification costs, platform governance, consumer surplus",
-                "reason_for_written_exam": "适合术语积累。",
-                "question_types": ["名词解释", "简答题"],
-                "exam_expression": "作答时可围绕‘成本下降—市场重构—治理回应’这一主线，并结合高频术语提升表达规范性。",
-            },
-            {
-                "label": "可背诵知识块",
-                "core_content": "数字经济的核心逻辑可以概括为：信息数字化导致关键成本下降，关键成本下降导致交易与组织方式变化，进而影响效率、福利与治理结果。",
-                "reason_for_written_exam": "适合直接背诵。",
-                "question_types": ["简答题", "论述题"],
-                "exam_expression": "数字经济的本质是成本结构重塑，其影响通过市场、组织与制度三重渠道展开。",
-            },
-        ]
+        return f"本文围绕{question}展开，并认为数字经济研究应在成本结构变化这一统一框架下理解。"
+    return f"本文围绕{question}展开，核心结论是{conclusion}"
 
-    if metadata.paper_type == "empirical":
-        return [
-            {
-                "label": "核心概念定义",
-                "core_content": "本文属于数字经济实证研究，重点检验数字化变量对具体经济结果的影响及其作用机制。",
-                "reason_for_written_exam": "适合简答题开头。",
-                "question_types": ["简答题"],
-                "exam_expression": "从研究类型看，数字经济实证研究的重点在于识别数字化变量如何影响经济绩效，并解释其作用路径。",
-            },
-            {
-                "label": "理论框架",
-                "core_content": f"文章遵循“数字化变量 -> {mechanism_line}变化 -> 结果变量变化”的实证逻辑，并在此基础上讨论异质性与机制检验。",
-                "reason_for_written_exam": "适合实证论文答题结构。",
-                "question_types": ["简答题", "论述题"],
-                "exam_expression": f"文章的实证框架是：数字化因素通过影响{mechanism_line}等中介机制，进而改变经济结果，并表现出显著的异质性。",
-            },
-            {
-                "label": "机制链条",
-                "core_content": f"数字化 -> {mechanism_line}下降 -> 资源配置与行为激励变化 -> 结果变量变化。",
-                "reason_for_written_exam": "适合机制展开题。",
-                "question_types": ["简答题", "论述题"],
-                "exam_expression": f"从作用机制看，数字化通过降低{mechanism_line}，改变资源配置效率与行为激励，并最终影响目标经济变量。",
-            },
-            {
-                "label": "规范化结论表述",
-                "core_content": "实证研究通常表明数字化效应真实存在，但其方向和强度依赖制度条件、组织能力和样本异质性。",
-                "reason_for_written_exam": "适合作为实证总结。",
-                "question_types": ["论述题"],
-                "exam_expression": "总体而言，数字经济的实证效应并非线性一致，而是受制度环境、组织资本和样本异质性共同影响。",
-            },
-            {
-                "label": "政策背景",
-                "core_content": f"文章的政策背景主要体现在{policy_line}，说明实证结论需要放回制度环境中解释。",
-                "reason_for_written_exam": "适合联系现实作答。",
-                "question_types": ["简答题", "论述题"],
-                "exam_expression": f"在政策层面，数字经济实证结论的成立通常依赖于{policy_line}等制度条件。",
-            },
-            {
-                "label": "高频术语",
-                "core_content": "empirical evidence, panel data, heterogeneity, mechanism test, digitalization, platform governance, privacy",
-                "reason_for_written_exam": "适合术语积累。",
-                "question_types": ["名词解释", "简答题"],
-                "exam_expression": "作答时可突出‘实证识别—机制检验—异质性分析’这一逻辑链条。",
-            },
-            {
-                "label": "可背诵知识块",
-                "core_content": "数字经济实证研究的基本思路是：先识别数字化变量的总体效应，再解释其通过哪些机制发挥作用，最后比较不同条件下的异质性表现。",
-                "reason_for_written_exam": "适合迁移到其他实证论文。",
-                "question_types": ["简答题", "论述题"],
-                "exam_expression": "数字经济实证研究通常围绕总体效应、机制检验和异质性分析三个层次展开。",
-            },
-        ]
 
-    if metadata.paper_type == "theoretical":
-        return [
-            {
-                "label": "核心概念定义",
-                "core_content": "本文属于理论导向研究，核心任务是通过模型假设和逻辑推演解释数字化情境下的经济机制。",
-                "reason_for_written_exam": "适合理论型文献概括。",
-                "question_types": ["简答题"],
-                "exam_expression": "理论型数字经济文献的重点在于通过假设设定和机制推导解释数字化条件下的行为结果。",
-            },
-            {
-                "label": "理论框架",
-                "core_content": "文章围绕关键假设、机制链条和均衡结果构建理论框架，并以此说明数字化如何改变传统经济结论。",
-                "reason_for_written_exam": "适合模型框架题。",
-                "question_types": ["简答题", "论述题"],
-                "exam_expression": "理论分析通常遵循‘假设设定—机制推演—均衡结果—边界条件’的结构。",
-            },
-            {
-                "label": "机制链条",
-                "core_content": f"模型设定 -> {mechanism_line}变化 -> 激励结构改变 -> 行为与均衡结果变化。",
-                "reason_for_written_exam": "适合机制推演题。",
-                "question_types": ["简答题", "论述题"],
-                "exam_expression": f"从理论机制看，数字化通过改变{mechanism_line}及相关激励结构，进而影响行为选择与均衡结果。",
-            },
-            {
-                "label": "规范化结论表述",
-                "core_content": "理论结论依赖假设条件成立，因此其价值在于澄清机制而非直接替代经验事实。",
-                "reason_for_written_exam": "适合作为理论题结尾。",
-                "question_types": ["论述题"],
-                "exam_expression": "理论文献的价值主要在于澄清机制、界定边界，而非直接给出现实世界中的经验效应大小。",
-            },
-            {
-                "label": "高频术语",
-                "core_content": "model, assumption, equilibrium, mechanism, proposition, incentive, boundary condition",
-                "reason_for_written_exam": "适合理论术语积累。",
-                "question_types": ["名词解释", "简答题"],
-                "exam_expression": "作答时宜突出模型假设、机制链条、均衡结果和边界条件。",
-            },
-            {
-                "label": "可背诵知识块",
-                "core_content": "理论型数字经济研究通常通过设定关键假设，分析成本变化如何改变激励结构，并据此推导行为与均衡结果。",
-                "reason_for_written_exam": "适合直接背诵。",
-                "question_types": ["简答题", "论述题"],
-                "exam_expression": "理论分析的关键在于：假设决定机制，机制决定结果，边界决定适用范围。",
-            },
-        ]
+def lookup_english_term(chinese_term: str) -> str:
+    if chinese_term in TERM_TRANSLATIONS:
+        return TERM_TRANSLATIONS[chinese_term]
+    if re.search(r"[A-Za-z]", chinese_term):
+        return chinese_term
+    return chinese_term
 
+
+def lookup_chinese_term(english_term: str) -> str:
+    lowered = english_term.lower()
+    for chinese, english in TERM_TRANSLATIONS.items():
+        if english.lower() == lowered:
+            return chinese
+    return english_term
+
+
+def build_terms(metadata: PaperMetadata, cost_terms: list[str], policy_topics: list[str]) -> list[dict[str, str]]:
+    seeds = list(metadata.keywords) + cost_terms + policy_topics + [metadata.field]
+    seen: set[str] = set()
+    terms: list[dict[str, str]] = []
+    for term in seeds:
+        if not term:
+            continue
+        if re.search(r"[A-Za-z]", term) and not re.search(r"[\u4e00-\u9fff]", term):
+            english = term
+            chinese = lookup_chinese_term(term)
+        else:
+            chinese = term
+            english = lookup_english_term(term)
+        key = f"{chinese}|{english}"
+        if key in seen:
+            continue
+        seen.add(key)
+        explanation = TERM_EXPLANATIONS.get(chinese) or TERM_EXPLANATIONS.get(english) or f"与{module_label('mechanism_analysis')}或论文主题直接相关的术语。"
+        terms.append({"chinese": chinese, "english": english, "explanation": explanation})
+        if len(terms) >= 8:
+            break
+    return terms
+
+
+def build_general_answer(module: str, content: str) -> str:
+    prefix = {
+        "research_background": "如果口头概括这篇论文的研究背景，我会先说：",
+        "research_question": "这篇论文真正要回答的问题可以概括为：",
+        "core_conclusion": "如果导师让我直接说结论，我会回答：",
+        "mechanism_analysis": "就机制而言，我会把这篇论文理解为：",
+        "policy_implication": "从政策层面看，我会强调：",
+    }[module]
+    return f"{prefix}{content}"
+
+
+def build_general_interview(mandatory_blocks: dict[str, str]) -> list[dict[str, str]]:
     return [
         {
-            "label": "制度背景",
-            "core_content": f"本文属于政策导向研究，核心讨论数字化条件下的{policy_line}等制度安排如何影响市场结果。",
-            "reason_for_written_exam": "适合政策型文献概括。",
-            "question_types": ["简答题", "论述题"],
-            "exam_expression": f"政策型数字经济文献的重点在于分析{policy_line}等制度安排如何塑造市场运行结果。",
-        },
-        {
-            "label": "理论框架",
-            "core_content": "文章围绕政策目标、制度工具、实施约束和经济后果构建分析框架。",
-            "reason_for_written_exam": "适合制度分析题。",
-            "question_types": ["简答题", "论述题"],
-            "exam_expression": "政策分析通常遵循‘政策目标—制度工具—实施约束—效果评价’的逻辑链条。",
-        },
-        {
-            "label": "机制链条",
-            "core_content": f"规则设计 -> {policy_line}变化 -> 激励与约束条件改变 -> 市场行为与福利结果变化。",
-            "reason_for_written_exam": "适合政策机制题。",
-            "question_types": ["简答题", "论述题"],
-            "exam_expression": f"从政策机制看，数字治理规则通过影响{policy_line}等关键制度条件，进一步改变市场激励与行为结果。",
-        },
-        {
-            "label": "规范化结论表述",
-            "core_content": "数字经济政策不能只追求效率提升，还应兼顾治理成本、实施约束与分配后果。",
-            "reason_for_written_exam": "适合作为政策题结尾。",
-            "question_types": ["论述题"],
-            "exam_expression": "数字经济政策具有显著的效率与治理双重目标，政策设计需要在促进创新与防范风险之间寻求平衡。",
-        },
-        {
-            "label": "政策背景",
-            "core_content": f"文章涉及的政策背景主要包括{policy_line}，反映数字经济研究高度依赖现实制度环境。",
-            "reason_for_written_exam": "适合联系现实作答。",
-            "question_types": ["简答题", "论述题"],
-            "exam_expression": f"在现实层面，数字经济政策往往围绕{policy_line}等制度议题展开。",
-        },
-        {
-            "label": "高频术语",
-            "core_content": "policy evaluation, platform governance, privacy, regulation, digital rights, welfare, implementation constraints",
-            "reason_for_written_exam": "适合政策术语积累。",
-            "question_types": ["名词解释", "简答题"],
-            "exam_expression": "作答时宜突出制度工具、实施约束、治理目标和政策后果。",
-        },
-        {
-            "label": "可背诵知识块",
-            "core_content": "政策型数字经济研究通常围绕制度工具如何改变市场激励、治理成本和福利结果展开。",
-            "reason_for_written_exam": "适合迁移到政策论述题。",
-            "question_types": ["简答题", "论述题"],
-            "exam_expression": "政策分析的核心在于：制度设计改变激励结构，激励结构影响行为结果，行为结果决定政策绩效。",
-        },
+            "module": module,
+            "question": MODULE_QUESTIONS_CN[module],
+            "answer": build_general_answer(module, mandatory_blocks[module]),
+            "why_this_matters": MODULE_WHY_MATTERS[module],
+        }
+        for module in MANDATORY_MODULES
     ]
 
 
-def build_overlap(metadata: PaperMetadata, cost_terms: list[str], policy_topics: list[str]) -> list[dict[str, str]]:
-    mechanism = "、".join(cost_terms) if cost_terms else "关键成本下降"
-    policy = "、".join(policy_topics) if policy_topics else "平台治理与隐私保护"
-    topics = [
+def english_term_note(terms: list[dict[str, str]], limit: int = 3) -> str:
+    selected = [f"{item['english']} ({item['chinese']})" for item in terms[:limit]]
+    return "; ".join(selected)
+
+
+def build_english_interview_answer(module: str, metadata: PaperMetadata, mandatory_blocks: dict[str, str], terms: list[dict[str, str]]) -> str:
+    field_en = field_to_english(metadata.field)
+    core_terms = english_term_note(terms, limit=3)
+    if module == "research_background":
+        if metadata.paper_type == "review":
+            return "The paper starts from the observation that digital technologies are reshaping economic activity, so the author tries to organize scattered studies into a coherent economic framework."
+        if metadata.paper_type == "empirical":
+            return f"The paper is motivated by a practical question in {field_en}: whether a specific digital factor has a measurable effect on the target outcome and why the effect differs across settings."
+        if metadata.paper_type == "theoretical":
+            return f"The background is mainly theoretical. The author wants to clarify how digitalization changes incentives and equilibrium conditions in {field_en}."
+        return f"The paper is motivated by the policy tension between digital efficiency gains and institutional governance in {field_en}."
+    if module == "research_question":
+        return f"At its core, the paper asks how the focal digital change affects economic behavior, market outcomes, and institutional arrangements in {field_en}."
+    if module == "core_conclusion":
+        if metadata.paper_type == "review":
+            return "The main conclusion is that many digital-economy phenomena can still be explained by standard economics once we focus on how digitization changes cost structures."
+        if metadata.paper_type == "empirical":
+            return "The paper concludes that the focal digital factor matters for the outcome variable, but the strength of the effect depends on heterogeneity and institutional conditions."
+        if metadata.paper_type == "theoretical":
+            return "The paper concludes that the predicted result depends on key assumptions, so the mechanism is clearer than the universal applicability of the conclusion."
+        return "The paper concludes that digital policy should not be judged by efficiency alone, because governance constraints and distributional effects matter as well."
+    if module == "mechanism_analysis":
+        return f"The mechanism is explained through changes in costs, incentives, and information conditions. In practical terms, the paper links the result to terms such as {core_terms}."
+    return "The policy implication is that digital development should be accompanied by stronger institutional design, especially when governance quality, regulation, and implementation capacity shape the final outcome."
+
+
+def build_english_interview(mandatory_blocks: dict[str, str], metadata: PaperMetadata, terms: list[dict[str, str]]) -> list[dict[str, str]]:
+    return [
         {
-            "topic": "数字经济的本质",
-            "interview_version": "可以把它理解为数字技术先改变了成本条件，经济行为才跟着变。",
-            "written_version": "数字经济的本质是数字化引发关键经济成本下降，并据此重塑资源配置与市场结构。",
-        },
-        {
-            "topic": "核心机制",
-            "interview_version": f"这篇文章最值得抓住的是{mechanism}这条主线。",
-            "written_version": f"文章以{mechanism}下降为核心机制框架解释数字化对经济活动的影响。",
-        },
-        {
-            "topic": "政策含义",
-            "interview_version": f"数字经济不能只谈效率，也要谈{policy}这些制度问题。",
-            "written_version": f"数字经济研究具有显著制度维度，政策上需兼顾效率提升与{policy}等治理目标。",
-        },
+            "module": module,
+            "question_en": MODULE_QUESTIONS_EN_INTERVIEW[module],
+            "answer_en": build_english_interview_answer(module, metadata, mandatory_blocks, terms),
+            "terminology_notes": english_term_note(terms, limit=3),
+        }
+        for module in MANDATORY_MODULES
     ]
-    if metadata.paper_type == "empirical":
-        topics.append(
-            {
-                "topic": "实证识别",
-                "interview_version": "我更关注它是怎么把相关性往因果识别方向推进的。",
-                "written_version": "数字经济实证研究通常需要通过识别策略增强因果推断的可信度。",
-            }
-        )
-    return topics[: max(2, min(4, len(topics)))]
+
+
+def build_written_answer(module: str, mandatory_blocks: dict[str, str]) -> str:
+    content = mandatory_blocks[module]
+    if content.startswith("原文未充分展开"):
+        return content
+    prefix = {
+        "research_background": "从研究背景看，",
+        "research_question": "从研究问题看，",
+        "core_conclusion": "从核心结论看，",
+        "mechanism_analysis": "从作用机制看，",
+        "policy_implication": "从政策启示看，",
+    }[module]
+    return f"{prefix}{content}"
+
+
+def build_professional_written_exam(mandatory_blocks: dict[str, str]) -> list[dict[str, str]]:
+    return [
+        {
+            "module": module,
+            "question": MODULE_QUESTIONS_CN_WRITTEN[module],
+            "answer": build_written_answer(module, mandatory_blocks),
+            "answer_type": WRITTEN_ANSWER_TYPES_CN[module],
+        }
+        for module in MANDATORY_MODULES
+    ]
+
+
+def build_english_written_answer(module: str, metadata: PaperMetadata, terms: list[dict[str, str]]) -> str:
+    field_en = field_to_english(metadata.field)
+    key_term = terms[0]["english"] if terms else "digitalization"
+    if module == "research_background":
+        return f"The research background lies in the growing importance of {key_term} in {field_en} and in the need to explain its economic consequences in a structured way."
+    if module == "research_question":
+        return f"The paper asks how the focal digital change influences economic outcomes, behavioral incentives, and institutional arrangements in {field_en}."
+    if module == "core_conclusion":
+        if metadata.paper_type == "review":
+            return "The paper argues that digital-economy phenomena can be interpreted within standard economic reasoning once the analysis is centered on changes in cost structures."
+        if metadata.paper_type == "empirical":
+            return "The paper finds that the focal digital variable has a meaningful effect on the target outcome, although the effect varies across contexts and institutions."
+        if metadata.paper_type == "theoretical":
+            return "The paper shows that the theoretical result depends on the model assumptions and should therefore be interpreted together with its boundary conditions."
+        return "The paper argues that policy assessment in the digital economy must balance efficiency, governance, and implementation constraints."
+    if module == "mechanism_analysis":
+        return "The mechanism can be summarized as a chain from changing costs and information conditions to shifting incentives, resource allocation, and finally economic outcomes."
+    return "The policy implication is that digital transformation needs complementary governance, regulation, and institutional capacity rather than a purely technology-driven approach."
+
+
+def build_english_written_exam(metadata: PaperMetadata, terms: list[dict[str, str]]) -> list[dict[str, str]]:
+    return [
+        {
+            "module": module,
+            "question_en": MODULE_QUESTIONS_EN_WRITTEN[module],
+            "answer_en": build_english_written_answer(module, metadata, terms),
+            "answer_type": WRITTEN_ANSWER_TYPES_EN[module],
+        }
+        for module in MANDATORY_MODULES
+    ]
+
+
+def build_review_outline() -> dict[str, list[str]]:
+    return {
+        "general_interview_outline": [MODULE_LABELS[module] for module in MANDATORY_MODULES],
+        "english_interview_outline": ["Research Background", "Research Question", "Core Conclusion", "Mechanism Analysis", "Policy Implication"],
+        "professional_written_exam_outline": [MODULE_LABELS[module] for module in MANDATORY_MODULES],
+        "english_written_exam_outline": ["Research Background", "Research Question", "Core Conclusion", "Mechanism Analysis", "Policy Implication"],
+    }
 
 
 def build_low_priority(metadata: PaperMetadata) -> list[dict[str, str]]:
     if metadata.paper_type == "review":
         return [
-            {"label": "具体文献条目清单", "reason": "优先级低于统一框架、机制主线与政策含义。"},
-            {"label": "机构与版本信息", "reason": "不影响对综述核心贡献的掌握。"},
+            {"label": "具体文献条目清单", "reason": "对复试主线帮助有限，优先级低于统一框架和政策含义。"},
+            {"label": "机构与版本信息", "reason": "不影响对论文核心思想的表达。"},
         ]
     if metadata.paper_type == "empirical":
         return [
-            {"label": "稳健性与附录细节", "reason": "在复试准备中优先级低于主结果、机制与异质性。"},
-            {"label": "数据清洗与变量构造细节", "reason": "适合作为补充理解，不是第一轮记忆重点。"},
+            {"label": "过细的数据清洗过程", "reason": "复试中迁移性弱，通常不应占据主干结构。"},
+            {"label": "稳健性检验的附录细节", "reason": "除非导师专门追问，否则优先级低于机制与主结论。"},
         ]
     if metadata.paper_type == "theoretical":
         return [
-            {"label": "技术性推导细节", "reason": "适合作为深入阅读内容，不适合作为第一轮口头和笔试准备重点。"},
-            {"label": "附录证明过程", "reason": "对抓住理论主线的边际收益较低。"},
+            {"label": "附录级技术推导", "reason": "对第一轮口答和卷面作答帮助较弱。"},
+            {"label": "复杂证明细节", "reason": "可作为深入阅读内容，但不宜替代固定模块。"},
         ]
     return [
-        {"label": "制度实施中的枝节案例", "reason": "优先级低于政策目标、工具与治理逻辑。"},
-        {"label": "背景材料中的扩展叙述", "reason": "适合作为补充阅读，不适合作为第一轮背诵重点。"},
+        {"label": "表格级政策背景细节", "reason": "对标准化复试表达的帮助弱于机制与启示。"},
+        {"label": "边缘案例说明", "reason": "适合作为补充阅读，不宜占据主框架。"},
     ]
 
 
-def build_review_outline(metadata: PaperMetadata) -> dict[str, list[str]]:
-    if metadata.paper_type == "review":
-        return {
-            "interview_outline": ["先讲研究背景。", "再讲统一框架。", "然后讲文献贡献与政策含义。", "最后讲局限性与开放问题。"],
-            "written_outline": ["先背定义。", "再背理论脉络与框架。", "然后背政策背景。", "最后背结论表达与高频术语。"],
-        }
-    if metadata.paper_type == "empirical":
-        return {
-            "interview_outline": ["先讲研究问题。", "再讲识别策略。", "然后讲机制和异质性。", "最后讲政策含义与局限性。"],
-            "written_outline": ["先背研究对象与定义。", "再背实证框架。", "然后背机制链条和结论。", "最后背政策背景与术语。"],
-        }
-    if metadata.paper_type == "theoretical":
-        return {
-            "interview_outline": ["先讲问题意识。", "再讲模型假设。", "然后讲核心机制与边界。", "最后讲现实启发。"],
-            "written_outline": ["先背研究对象。", "再背模型框架。", "然后背机制推演。", "最后背规范化结论。"],
-        }
+def build_extra(metadata: PaperMetadata) -> dict[str, list[str]]:
+    innovation = {
+        "review": ["文章通过统一框架整合分散文献，而不是简单罗列已有观点。"],
+        "empirical": ["文章把数字化变量的总体效应、机制检验和异质性分析放进同一实证框架中。"],
+        "theoretical": ["文章通过模型设定澄清数字化条件下的机制和边界。"],
+        "policy": ["文章把制度工具、实施约束和政策效果统一到一个分析框架中。"],
+    }[metadata.paper_type]
+    limitations = {
+        "review": ["作为综述，文章更擅长框架整合，弱于对单个机制进行严格识别。"],
+        "empirical": ["文章的外部有效性和识别强度仍然取决于样本范围与制度背景。"],
+        "theoretical": ["理论结论对假设条件依赖较强，现实适用性需要进一步验证。"],
+        "policy": ["政策判断可能受到制度环境差异和实施能力差异的影响。"],
+    }[metadata.paper_type]
+    extension = {
+        "review": ["后续可继续比较不同数字场景下同一机制为何会呈现不同结果。"],
+        "empirical": ["后续可继续识别机制的边界条件，并考察不同地区或组织条件下的差异。"],
+        "theoretical": ["后续可进一步放松假设，并与经验研究结合检验理论边界。"],
+        "policy": ["后续可继续比较不同政策工具组合对效率与治理目标的权衡。"],
+    }[metadata.paper_type]
     return {
-        "interview_outline": ["先讲制度背景。", "再讲政策工具。", "然后讲治理权衡。", "最后讲现实启发。"],
-        "written_outline": ["先背政策背景。", "再背分析框架。", "然后背机制链条。", "最后背规范化结论。"],
-    }
-
-
-def build_extra(metadata: PaperMetadata, cost_terms: list[str], policy_topics: list[str]) -> dict[str, Any]:
-    mechanism = "、".join(cost_terms) if cost_terms else "关键成本下降"
-    policy = "、".join(policy_topics) if policy_topics else "平台治理与制度约束"
-    key_points = [f"{metadata.field}研究的关键是把技术变化还原为经济成本变化。"]
-    if metadata.paper_type == "review":
-        key_points.append("综述型文献的价值主要体现在统一框架与组织文献。")
-    elif metadata.paper_type == "empirical":
-        key_points.append("实证型文献的价值主要体现在识别总体效应、机制与异质性。")
-    elif metadata.paper_type == "theoretical":
-        key_points.append("理论型文献的价值主要体现在机制澄清和边界界定。")
-    else:
-        key_points.append("政策型文献的价值主要体现在制度评价与治理权衡。")
-    key_points.append("数字化效应通常伴随明显异质性。")
-    return {
-        "key_points": key_points,
-        "mechanisms": [
-            f"数字化 -> {mechanism} -> 交易与组织方式变化",
-            "技术扩散 -> 激励结构变化 -> 市场与福利结果重构",
-        ],
-        "policy_implications": [
-            f"需要关注{policy}。",
-            "需要把效率提升与制度治理放在同一分析框架下。",
-        ],
-        "limitations": [
-            "不同场景下机制强弱可能存在明显异质性。",
-            "需要结合具体文献类型判断外部适用性与识别力度。",
-        ],
-    }
-
-
-def build_english_support(cost_terms: list[str], paper_type: str) -> dict[str, Any]:
-    key_terms = [
-        {"english": "digital economics", "chinese": "数字经济", "explanation": "研究数字技术如何改变经济活动与资源配置的领域。"},
-        {"english": "consumer surplus", "chinese": "消费者剩余", "explanation": "消费者愿付价格与实际支付价格之间的差额。"},
-        {"english": "platform governance", "chinese": "平台治理", "explanation": "围绕平台规则、激励和责任分配形成的治理安排。"},
-        {"english": paper_type, "chinese": {"review": "综述型文献", "empirical": "实证型文献", "theoretical": "理论型文献", "policy": "政策型文献"}[paper_type], "explanation": "用于区分论文类型的内部分析标签。"},
-    ]
-    for token, chinese in DIGITAL_COST_LABELS:
-        if chinese in cost_terms:
-            key_terms.append({"english": f"{token} costs", "chinese": chinese, "explanation": f"指与{chinese}相关的资源消耗或约束。"})
-    return {
-        "key_terms": key_terms,
-        "oral_sentence_patterns": [
-            "This paper should be understood through its core mechanism rather than through isolated findings.",
-            "The main contribution is to explain how changing costs reshape economic behavior.",
-            "In the interview, I would first explain the question, then the mechanism, and finally the policy implication.",
-        ],
-        "written_sentence_patterns": [
-            "The paper shows that digitization matters because it changes the structure of economic costs.",
-            "The mechanism can be summarized as changing constraints leading to new behavioral and institutional outcomes.",
-            "The final effect is heterogeneous and depends on organizational, institutional, and policy conditions.",
-        ],
+        "innovation_points": innovation,
+        "limitations": limitations,
+        "extension_research": extension,
+        "source_notes": ["固定 5 模块为强制主框架，可选内容仅作为补充，不替代主干结构。"],
     }
 
 
@@ -1256,10 +1248,14 @@ def build_metadata(source: SourceData, forced_language: str | None = None) -> tu
 
     conclusion = extract_conclusion(cleaned, language)
     introduction = extract_introduction(cleaned, language)
-    abstract_sentences = split_sentences(abstract, language)
-    conclusion_sentences = split_sentences(conclusion, language)
-    intro_sentences = split_sentences(introduction, language)
-
+    sections = PaperSections(
+        abstract=abstract,
+        abstract_sentences=split_sentences(abstract, language),
+        conclusion=conclusion,
+        conclusion_sentences=split_sentences(conclusion, language),
+        introduction=introduction,
+        intro_sentences=split_sentences(introduction, language),
+    )
     field = determine_field(title, abstract, conclusion)
     keywords = extract_keywords(title, abstract, cleaned, field, language)
     paper_type = detect_paper_type(title, abstract, conclusion, cleaned)
@@ -1275,24 +1271,23 @@ def build_metadata(source: SourceData, forced_language: str | None = None) -> tu
         keywords=keywords,
         paper_type=paper_type,
     )
-    sections = PaperSections(
-        abstract=abstract,
-        abstract_sentences=abstract_sentences,
-        conclusion=conclusion,
-        conclusion_sentences=conclusion_sentences,
-        introduction=introduction,
-        intro_sentences=intro_sentences,
-    )
     return metadata, sections, used_title_fallback
 
 
 def build_full_output(source: SourceData, forced_language: str | None = None) -> tuple[dict[str, Any], str, bool, PaperMetadata, PaperSections]:
     metadata, sections, used_title_fallback = build_metadata(source, forced_language=forced_language)
-    cost_terms = detect_cost_terms("\n".join([source.raw_text, sections.abstract, sections.conclusion]))
-    policy_topics = detect_policy_topics("\n".join([source.raw_text, sections.abstract, sections.conclusion]))
+    combined_text = "\n".join([source.raw_text, sections.abstract, sections.conclusion])
+    cost_terms = detect_cost_terms(combined_text)
+    policy_topics = detect_policy_topics(combined_text)
+    mandatory_blocks = build_mandatory_blocks(metadata, sections, cost_terms, policy_topics)
+    terms = build_terms(metadata, cost_terms, policy_topics)
 
     full = {
-        "meta": {"schema_version": "1.0"},
+        "meta": {
+            "schema_version": "2.0",
+            "output_version": OUTPUT_VERSION,
+            "framework": FRAMEWORK_NAME,
+        },
         "paper_info": {
             "title": metadata.title,
             "authors": metadata.authors,
@@ -1306,45 +1301,54 @@ def build_full_output(source: SourceData, forced_language: str | None = None) ->
             "confidence": metadata.language_confidence,
             "reason": metadata.language_reason,
         },
-        "one_sentence_summary": build_topic_summary(metadata.title, metadata, sections, cost_terms),
-        "interview_useful": build_interview_useful(metadata, sections, cost_terms, policy_topics),
-        "written_exam_useful": build_written_exam_useful(metadata, sections, cost_terms, policy_topics),
-        "overlap_but_rewritten": build_overlap(metadata, cost_terms, policy_topics),
+        "mandatory_blocks": mandatory_blocks,
+        "one_sentence_summary": build_one_sentence_summary(metadata, mandatory_blocks),
+        "general_interview": build_general_interview(mandatory_blocks),
+        "english_interview": build_english_interview(mandatory_blocks, metadata, terms),
+        "professional_written_exam": build_professional_written_exam(mandatory_blocks),
+        "english_written_exam": build_english_written_exam(metadata, terms),
+        "review_outline": build_review_outline(),
+        "terms": terms,
         "low_priority": build_low_priority(metadata),
-        "review_outline": build_review_outline(metadata),
-        "extra": build_extra(metadata, cost_terms, policy_topics),
-        "english_support": build_english_support(cost_terms, metadata.paper_type),
+        "extra": build_extra(metadata),
     }
-    slug, slug_used_hash = slugify(metadata.title)
-    return full, slug, used_title_fallback or slug_used_hash, metadata, sections
+    slug, used_slug_fallback = slugify(metadata.title)
+    return full, slug, used_title_fallback or used_slug_fallback, metadata, sections
 
 
-def split_outputs(full: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
-    interview = {
+def split_outputs(full: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    base = {
+        "meta": full["meta"],
         "paper_info": full["paper_info"],
         "language_detect_result": full["language_detect_result"],
+        "mandatory_blocks": full["mandatory_blocks"],
         "one_sentence_summary": full["one_sentence_summary"],
-        "interview_useful": full["interview_useful"],
-        "review_outline": {"interview_outline": full["review_outline"]["interview_outline"]},
+        "terms": full["terms"],
+        "low_priority": full["low_priority"],
         "extra": full["extra"],
-        "english_support": {
-            "key_terms": full["english_support"]["key_terms"],
-            "oral_sentence_patterns": full["english_support"]["oral_sentence_patterns"],
+    }
+    return {
+        "general_interview.json": {
+            **base,
+            "general_interview": full["general_interview"],
+            "review_outline": {"general_interview_outline": full["review_outline"]["general_interview_outline"]},
+        },
+        "english_interview.json": {
+            **base,
+            "english_interview": full["english_interview"],
+            "review_outline": {"english_interview_outline": full["review_outline"]["english_interview_outline"]},
+        },
+        "professional_written_exam.json": {
+            **base,
+            "professional_written_exam": full["professional_written_exam"],
+            "review_outline": {"professional_written_exam_outline": full["review_outline"]["professional_written_exam_outline"]},
+        },
+        "english_written_exam.json": {
+            **base,
+            "english_written_exam": full["english_written_exam"],
+            "review_outline": {"english_written_exam_outline": full["review_outline"]["english_written_exam_outline"]},
         },
     }
-    written = {
-        "paper_info": full["paper_info"],
-        "language_detect_result": full["language_detect_result"],
-        "one_sentence_summary": full["one_sentence_summary"],
-        "written_exam_useful": full["written_exam_useful"],
-        "review_outline": {"written_outline": full["review_outline"]["written_outline"]},
-        "extra": full["extra"],
-        "english_support": {
-            "key_terms": full["english_support"]["key_terms"],
-            "written_sentence_patterns": full["english_support"]["written_sentence_patterns"],
-        },
-    }
-    return interview, written
 
 
 def load_schema(path: Path) -> Any:
@@ -1440,16 +1444,10 @@ def style_sheet(sheet, theme: str = "default") -> None:
         for cell in column_cells:
             value = "" if cell.value is None else str(cell.value)
             max_length = max(max_length, len(value))
-        sheet.column_dimensions[column_letter].width = min(max(max_length + 2, 14), 48)
+        sheet.column_dimensions[column_letter].width = min(max(max_length + 2, 16), 56)
 
     if sheet.max_row >= 1:
         sheet.freeze_panes = "A3"
-
-    for row in sheet.iter_rows(min_row=1, max_row=sheet.max_row):
-        if row[0].value in {"Interview", "Written", "Overlap", "Terms", "Run Report"}:
-            for cell in row:
-                cell.font = Font(bold=True, color="000000")
-                cell.fill = section_fill
 
     if theme == "memorize":
         for row_idx in range(3, sheet.max_row + 1):
@@ -1478,14 +1476,7 @@ def append_table(sheet, title: str, headers: list[str], rows: list[list[str]]) -
     sheet.append([])
 
 
-def create_excel_workbook(
-    output_path: Path,
-    full: dict[str, Any],
-    interview: dict[str, Any],
-    written: dict[str, Any],
-    run_report: dict[str, Any],
-    theme: str = "default",
-) -> None:
+def create_excel_workbook(output_path: Path, full: dict[str, Any], run_report: dict[str, Any], theme: str = "default") -> None:
     workbook = Workbook()
 
     overview = workbook.active
@@ -1502,80 +1493,64 @@ def create_excel_workbook(
         ["Keywords", "；".join(info["keywords"])],
         ["Summary", full["one_sentence_summary"]],
         ["Schema Version", full["meta"]["schema_version"]],
+        ["Output Version", full["meta"]["output_version"]],
+        ["Framework", full["meta"]["framework"]],
     ]
     for row in overview_rows:
         overview.append(row)
     style_sheet(overview, theme=theme)
 
-    interview_sheet = workbook.create_sheet("Interview")
+    mandatory_sheet = workbook.create_sheet("Mandatory Blocks")
     append_table(
-        interview_sheet,
-        "Interview",
-        ["Label", "Core Content", "Reason", "Typical Questions", "Oral Answer Sample"],
-        [
-            [
-                item["label"],
-                item["core_content"],
-                item["reason_for_interview"],
-                "；".join(item["typical_questions"]),
-                item["oral_answer_sample"],
-            ]
-            for item in interview["interview_useful"]
-        ],
+        mandatory_sheet,
+        "Mandatory Blocks",
+        ["Module", "Chinese Label", "Content"],
+        [[module, module_label(module), full["mandatory_blocks"][module]] for module in MANDATORY_MODULES],
     )
-    style_sheet(interview_sheet, theme=theme)
+    style_sheet(mandatory_sheet, theme=theme)
 
-    written_sheet = workbook.create_sheet("Written")
+    general_sheet = workbook.create_sheet("General Interview")
     append_table(
-        written_sheet,
-        "Written",
-        ["Label", "Core Content", "Reason", "Question Types", "Exam Expression"],
-        [
-            [
-                item["label"],
-                item["core_content"],
-                item["reason_for_written_exam"],
-                "；".join(item["question_types"]),
-                item["exam_expression"],
-            ]
-            for item in written["written_exam_useful"]
-        ],
+        general_sheet,
+        "General Interview",
+        ["Module", "Question", "Answer", "Why This Matters"],
+        [[item["module"], item["question"], item["answer"], item["why_this_matters"]] for item in full["general_interview"]],
     )
-    style_sheet(written_sheet, theme=theme)
+    style_sheet(general_sheet, theme=theme)
 
-    overlap_sheet = workbook.create_sheet("Overlap")
+    english_interview_sheet = workbook.create_sheet("English Interview")
     append_table(
-        overlap_sheet,
-        "Overlap",
-        ["Topic", "Interview Version", "Written Version"],
-        [
-            [item["topic"], item["interview_version"], item["written_version"]]
-            for item in full["overlap_but_rewritten"]
-        ],
+        english_interview_sheet,
+        "English Interview",
+        ["Module", "Question", "Answer", "Terminology Notes"],
+        [[item["module"], item["question_en"], item["answer_en"], item["terminology_notes"]] for item in full["english_interview"]],
     )
-    style_sheet(overlap_sheet, theme=theme)
+    style_sheet(english_interview_sheet, theme=theme)
+
+    professional_sheet = workbook.create_sheet("Professional Written")
+    append_table(
+        professional_sheet,
+        "Professional Written",
+        ["Module", "Question", "Answer", "Answer Type"],
+        [[item["module"], item["question"], item["answer"], item["answer_type"]] for item in full["professional_written_exam"]],
+    )
+    style_sheet(professional_sheet, theme=theme)
+
+    english_written_sheet = workbook.create_sheet("English Written")
+    append_table(
+        english_written_sheet,
+        "English Written",
+        ["Module", "Question", "Answer", "Answer Type"],
+        [[item["module"], item["question_en"], item["answer_en"], item["answer_type"]] for item in full["english_written_exam"]],
+    )
+    style_sheet(english_written_sheet, theme=theme)
 
     terms_sheet = workbook.create_sheet("Terms")
     append_table(
         terms_sheet,
         "Terms",
-        ["English", "Chinese", "Explanation"],
-        [
-            [item["english"], item["chinese"], item["explanation"]]
-            for item in full["english_support"]["key_terms"]
-        ],
-    )
-    append_table(
-        terms_sheet,
-        "Oral Patterns",
-        ["Pattern"],
-        [[item] for item in full["english_support"]["oral_sentence_patterns"]],
-    )
-    append_table(
-        terms_sheet,
-        "Written Patterns",
-        ["Pattern"],
-        [[item] for item in full["english_support"]["written_sentence_patterns"]],
+        ["Chinese", "English", "Explanation"],
+        [[item["chinese"], item["english"], item["explanation"]] for item in full["terms"]],
     )
     style_sheet(terms_sheet, theme=theme)
 
@@ -1588,8 +1563,17 @@ def create_excel_workbook(
 
     workbook.save(output_path)
     reloaded = load_workbook(output_path)
-    expected_sheets = {"Overview", "Interview", "Written", "Overlap", "Terms", "Run Report"}
-    if set(reloaded.sheetnames) != expected_sheets:
+    expected_sheets = [
+        "Overview",
+        "Mandatory Blocks",
+        "General Interview",
+        "English Interview",
+        "Professional Written",
+        "English Written",
+        "Terms",
+        "Run Report",
+    ]
+    if reloaded.sheetnames != expected_sheets:
         raise ValueError(f"Excel workbook sheets mismatch: {reloaded.sheetnames}")
 
 
@@ -1602,6 +1586,7 @@ def build_run_report(source: SourceData, metadata: PaperMetadata, sections: Pape
         "used_fallback_slug": used_fallback_slug,
         "abstract_length": len(sections.abstract),
         "source_path": source.source_path,
+        "output_version": OUTPUT_VERSION,
     }
 
 
@@ -1611,7 +1596,7 @@ def main() -> int:
     try:
         source = load_source(input_path, args.input_text)
         full, auto_slug, used_fallback_slug, metadata, sections = build_full_output(source, forced_language=args.language)
-        interview, written = split_outputs(full)
+        split_files = split_outputs(full)
 
         if args.stdout_json:
             print(json.dumps(full, ensure_ascii=False, indent=2))
@@ -1624,22 +1609,25 @@ def main() -> int:
         run_report = build_run_report(source, metadata, sections, used_fallback_slug)
 
         write_json(output_dir / "full.json", full, FULL_SCHEMA_PATH)
-        write_json(output_dir / "interview.json", interview, INTERVIEW_SCHEMA_PATH)
-        write_json(output_dir / "written_exam.json", written, WRITTEN_SCHEMA_PATH)
+        schema_map = {
+            "general_interview.json": GENERAL_SCHEMA_PATH,
+            "english_interview.json": ENGLISH_INTERVIEW_SCHEMA_PATH,
+            "professional_written_exam.json": PROFESSIONAL_WRITTEN_SCHEMA_PATH,
+            "english_written_exam.json": ENGLISH_WRITTEN_SCHEMA_PATH,
+        }
+        for filename, payload in split_files.items():
+            write_json(output_dir / filename, payload, schema_map[filename])
+
         (output_dir / "run-report.json").write_text(
             json.dumps(run_report, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
-        create_excel_workbook(output_dir / EXCEL_FILENAME, full, interview, written, run_report, theme="default")
-        create_excel_workbook(output_dir / MEMORIZE_EXCEL_FILENAME, full, interview, written, run_report, theme="memorize")
-        create_excel_workbook(output_dir / PRINT_EXCEL_FILENAME, full, interview, written, run_report, theme="print")
+        create_excel_workbook(output_dir / "retest_pack.xlsx", full, run_report, theme="default")
+        create_excel_workbook(output_dir / "retest_pack_memorize.xlsx", full, run_report, theme="memorize")
+        create_excel_workbook(output_dir / "retest_pack_print.xlsx", full, run_report, theme="print")
 
-        print(output_dir / "full.json")
-        print(output_dir / "interview.json")
-        print(output_dir / "written_exam.json")
-        print(output_dir / EXCEL_FILENAME)
-        print(output_dir / MEMORIZE_EXCEL_FILENAME)
-        print(output_dir / PRINT_EXCEL_FILENAME)
+        for filename in PRINTED_OUTPUTS:
+            print(output_dir / filename)
         return 0
     except UserFacingError as exc:
         print(str(exc))

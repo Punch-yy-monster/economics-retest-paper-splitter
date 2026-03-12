@@ -1,0 +1,144 @@
+{
+  "meta": {
+    "schema_version": "2.0",
+    "output_version": "2.0.0",
+    "framework": "five-mandatory-modules-four-channels"
+  },
+  "paper_info": {
+    "title": "Digital Economics",
+    "authors": [
+      "Avi Goldfarb",
+      "Catherine Tucker"
+    ],
+    "year": "2017",
+    "language": "英文文献",
+    "field": "数字经济学",
+    "keywords": [
+      "digital economics",
+      "digital technology",
+      "platform governance",
+      "data",
+      "privacy"
+    ]
+  },
+  "language_detect_result": {
+    "detected_language": "英文文献",
+    "confidence": "high",
+    "reason": "标题与摘要主体以英文连续文本为主。"
+  },
+  "mandatory_blocks": {
+    "research_background": "文章关注数字化条件变化如何重塑经济活动与制度环境。",
+    "research_question": "文章围绕《Digital Economics》所对应的问题，讨论数字化变化如何影响经济活动。",
+    "core_conclusion": "文章强调数字化会通过重塑关键经济成本结构来改变市场行为和经济结果。",
+    "mechanism_analysis": "文章强调数字化主要通过改变信息、匹配与治理成本来影响经济结果。",
+    "policy_implication": "文章指出隐私与数据使用边界会直接影响数字市场的运行规则。"
+  },
+  "one_sentence_summary": "本文围绕文章围绕《Digital Economics》所对应的问题，讨论数字化变化如何影响经济活动。展开，并认为数字经济研究应在成本结构变化这一统一框架下理解。",
+  "terms": [
+    {
+      "chinese": "数字经济",
+      "english": "digital economics",
+      "explanation": "强调数字技术如何改变资源配置、交易成本和市场组织方式。"
+    },
+    {
+      "chinese": "数字技术",
+      "english": "digital technology",
+      "explanation": "与机制分析或论文主题直接相关的术语。"
+    },
+    {
+      "chinese": "平台治理",
+      "english": "platform governance",
+      "explanation": "指平台规则、激励设计与责任分配的治理安排。"
+    },
+    {
+      "chinese": "data",
+      "english": "data",
+      "explanation": "与机制分析或论文主题直接相关的术语。"
+    },
+    {
+      "chinese": "privacy",
+      "english": "privacy",
+      "explanation": "与机制分析或论文主题直接相关的术语。"
+    },
+    {
+      "chinese": "搜索成本",
+      "english": "search costs",
+      "explanation": "指为获取信息、比较对象和寻找交易匹配所付出的成本。"
+    },
+    {
+      "chinese": "复制成本",
+      "english": "replication costs",
+      "explanation": "指复制信息产品或数字产品的边际成本。"
+    },
+    {
+      "chinese": "运输成本",
+      "english": "transportation costs",
+      "explanation": "指商品、服务或信息在空间上转移的成本。"
+    }
+  ],
+  "low_priority": [
+    {
+      "label": "具体文献条目清单",
+      "reason": "对复试主线帮助有限，优先级低于统一框架和政策含义。"
+    },
+    {
+      "label": "机构与版本信息",
+      "reason": "不影响对论文核心思想的表达。"
+    }
+  ],
+  "extra": {
+    "innovation_points": [
+      "文章通过统一框架整合分散文献，而不是简单罗列已有观点。"
+    ],
+    "limitations": [
+      "作为综述，文章更擅长框架整合，弱于对单个机制进行严格识别。"
+    ],
+    "extension_research": [
+      "后续可继续比较不同数字场景下同一机制为何会呈现不同结果。"
+    ],
+    "source_notes": [
+      "固定 5 模块为强制主框架，可选内容仅作为补充，不替代主干结构。"
+    ]
+  },
+  "professional_written_exam": [
+    {
+      "module": "research_background",
+      "question": "请概括本文的研究背景。",
+      "answer": "从研究背景看，文章关注数字化条件变化如何重塑经济活动与制度环境。",
+      "answer_type": "简答题"
+    },
+    {
+      "module": "research_question",
+      "question": "请说明本文的核心研究问题。",
+      "answer": "从研究问题看，文章围绕《Digital Economics》所对应的问题，讨论数字化变化如何影响经济活动。",
+      "answer_type": "简答题"
+    },
+    {
+      "module": "core_conclusion",
+      "question": "请概括本文的核心结论。",
+      "answer": "从核心结论看，文章强调数字化会通过重塑关键经济成本结构来改变市场行为和经济结果。",
+      "answer_type": "简答题"
+    },
+    {
+      "module": "mechanism_analysis",
+      "question": "请分析本文的作用机制。",
+      "answer": "从作用机制看，文章强调数字化主要通过改变信息、匹配与治理成本来影响经济结果。",
+      "answer_type": "论述题"
+    },
+    {
+      "module": "policy_implication",
+      "question": "请说明本文的政策启示。",
+      "answer": "从政策启示看，文章指出隐私与数据使用边界会直接影响数字市场的运行规则。",
+      "answer_type": "论述题"
+    }
+  ],
+  "review_outline": {
+    "professional_written_exam_outline": [
+      "研究背景",
+      "研究问题",
+      "核心结论",
+      "机制分析",
+      "政策启示"
+    ]
+  }
+}

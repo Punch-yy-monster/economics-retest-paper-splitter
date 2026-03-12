@@ -1,0 +1,147 @@
+{
+  "meta": {
+    "schema_version": "2.0",
+    "output_version": "2.0.0",
+    "framework": "five-mandatory-modules-four-channels"
+  },
+  "paper_info": {
+    "title": "数据要素流通、平台治理与区域创新",
+    "authors": [
+      "张明",
+      "李华"
+    ],
+    "year": "2024",
+    "language": "中文文献",
+    "field": "数字经济学",
+    "keywords": [
+      "数据要素流通",
+      "平台治理",
+      "区域创新",
+      "创新绩效",
+      "数字基础设施",
+      "隐私保护",
+      "知识溢出",
+      "信息不对称"
+    ]
+  },
+  "language_detect_result": {
+    "detected_language": "中文文献",
+    "confidence": "high",
+    "reason": "标题与摘要主体以中文为主。"
+  },
+  "mandatory_blocks": {
+    "research_background": "本文基于中国省级面板数据，考察数据要素流通对区域创新绩效的影响。",
+    "research_question": "本文基于中国省级面板数据，考察数据要素流通对区域创新绩效的影响。",
+    "core_conclusion": "研究发现，数据要素流通能够显著提升区域创新水平，其作用机制主要体现在降低信息不对称、改善资源配置效率和强化知识溢出。",
+    "mechanism_analysis": "研究发现，数据要素流通能够显著提升区域创新水平，其作用机制主要体现在降低信息不对称、改善资源配置效率和强化知识溢出。",
+    "policy_implication": "进一步研究显示，平台治理规则、数据产权安排和隐私保护制度会影响数据要素流通的实际效果。"
+  },
+  "one_sentence_summary": "本文围绕本文基于中国省级面板数据，考察数据要素流通对区域创新绩效的影响。展开，核心结论是研究发现，数据要素流通能够显著提升区域创新水平，其作用机制主要体现在降低信息不对称、改善资源配置效率和强化知识溢出。",
+  "terms": [
+    {
+      "chinese": "数据要素流通",
+      "english": "data factor circulation",
+      "explanation": "指数据在不同主体之间的获取、流动、交易和使用过程。"
+    },
+    {
+      "chinese": "平台治理",
+      "english": "platform governance",
+      "explanation": "指平台规则、激励设计与责任分配的治理安排。"
+    },
+    {
+      "chinese": "区域创新",
+      "english": "regional innovation",
+      "explanation": "强调地区层面的创新产出、创新质量与创新效率变化。"
+    },
+    {
+      "chinese": "创新绩效",
+      "english": "innovation performance",
+      "explanation": "与机制分析或论文主题直接相关的术语。"
+    },
+    {
+      "chinese": "数字基础设施",
+      "english": "digital infrastructure",
+      "explanation": "指支撑数字化生产、交易与治理的网络和算力基础。"
+    },
+    {
+      "chinese": "隐私保护",
+      "english": "privacy protection",
+      "explanation": "与机制分析或论文主题直接相关的术语。"
+    },
+    {
+      "chinese": "知识溢出",
+      "english": "knowledge spillovers",
+      "explanation": "指知识扩散到其他主体并产生外部收益的过程。"
+    },
+    {
+      "chinese": "信息不对称",
+      "english": "information asymmetry",
+      "explanation": "指交易双方掌握的信息不对等，从而影响决策和资源配置。"
+    }
+  ],
+  "low_priority": [
+    {
+      "label": "过细的数据清洗过程",
+      "reason": "复试中迁移性弱，通常不应占据主干结构。"
+    },
+    {
+      "label": "稳健性检验的附录细节",
+      "reason": "除非导师专门追问，否则优先级低于机制与主结论。"
+    }
+  ],
+  "extra": {
+    "innovation_points": [
+      "文章把数字化变量的总体效应、机制检验和异质性分析放进同一实证框架中。"
+    ],
+    "limitations": [
+      "文章的外部有效性和识别强度仍然取决于样本范围与制度背景。"
+    ],
+    "extension_research": [
+      "后续可继续识别机制的边界条件，并考察不同地区或组织条件下的差异。"
+    ],
+    "source_notes": [
+      "固定 5 模块为强制主框架，可选内容仅作为补充，不替代主干结构。"
+    ]
+  },
+  "english_interview": [
+    {
+      "module": "research_background",
+      "question_en": "Why is this topic worth studying in the first place?",
+      "answer_en": "The paper is motivated by a practical question in digital economics: whether a specific digital factor has a measurable effect on the target outcome and why the effect differs across settings.",
+      "terminology_notes": "data factor circulation (数据要素流通); platform governance (平台治理); regional innovation (区域创新)"
+    },
+    {
+      "module": "research_question",
+      "question_en": "What is the central research question of the paper?",
+      "answer_en": "At its core, the paper asks how the focal digital change affects economic behavior, market outcomes, and institutional arrangements in digital economics.",
+      "terminology_notes": "data factor circulation (数据要素流通); platform governance (平台治理); regional innovation (区域创新)"
+    },
+    {
+      "module": "core_conclusion",
+      "question_en": "What is the main conclusion of the paper?",
+      "answer_en": "The paper concludes that the focal digital factor matters for the outcome variable, but the strength of the effect depends on heterogeneity and institutional conditions.",
+      "terminology_notes": "data factor circulation (数据要素流通); platform governance (平台治理); regional innovation (区域创新)"
+    },
+    {
+      "module": "mechanism_analysis",
+      "question_en": "What mechanism does the author use to explain the result?",
+      "answer_en": "The mechanism is explained through changes in costs, incentives, and information conditions. In practical terms, the paper links the result to terms such as data factor circulation (数据要素流通); platform governance (平台治理); regional innovation (区域创新).",
+      "terminology_notes": "data factor circulation (数据要素流通); platform governance (平台治理); regional innovation (区域创新)"
+    },
+    {
+      "module": "policy_implication",
+      "question_en": "What policy relevance do you see in this paper?",
+      "answer_en": "The policy implication is that digital development should be accompanied by stronger institutional design, especially when governance quality, regulation, and implementation capacity shape the final outcome.",
+      "terminology_notes": "data factor circulation (数据要素流通); platform governance (平台治理); regional innovation (区域创新)"
+    }
+  ],
+  "review_outline": {
+    "english_interview_outline": [
+      "Research Background",
+      "Research Question",
+      "Core Conclusion",
+      "Mechanism Analysis",
+      "Policy Implication"
+    ]
+  }
+}

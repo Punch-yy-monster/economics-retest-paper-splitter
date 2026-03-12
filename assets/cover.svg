@@ -1,61 +1,72 @@
-<svg width="1280" height="640" viewBox="0 0 1280 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="1280" height="700" viewBox="0 0 1280 700" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bg" x1="90" y1="40" x2="1180" y2="610" gradientUnits="userSpaceOnUse">
+    <linearGradient id="bg" x1="80" y1="20" x2="1180" y2="660" gradientUnits="userSpaceOnUse">
       <stop stop-color="#F7F2E8"/>
-      <stop offset="0.52" stop-color="#F1E6D2"/>
-      <stop offset="1" stop-color="#E7DCC6"/>
+      <stop offset="0.55" stop-color="#F0E5D4"/>
+      <stop offset="1" stop-color="#E6D8BF"/>
     </linearGradient>
-    <linearGradient id="panel" x1="170" y1="152" x2="1110" y2="500" gradientUnits="userSpaceOnUse">
+    <linearGradient id="panel" x1="170" y1="150" x2="1110" y2="520" gradientUnits="userSpaceOnUse">
       <stop stop-color="#FFFDF8"/>
-      <stop offset="1" stop-color="#F8F1E4"/>
+      <stop offset="1" stop-color="#F8F0E2"/>
     </linearGradient>
-    <filter id="shadow" x="132" y="124" width="1016" height="396" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+    <filter id="shadow" x="130" y="120" width="1020" height="430" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
       <feFlood flood-opacity="0" result="BackgroundImageFix"/>
       <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
       <feOffset dy="14"/>
       <feGaussianBlur stdDeviation="20"/>
-      <feColorMatrix type="matrix" values="0 0 0 0 0.35 0 0 0 0 0.22 0 0 0 0 0.08 0 0 0 0.18 0"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.35 0 0 0 0 0.22 0 0 0 0 0.08 0 0 0 0.16 0"/>
       <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_1"/>
       <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_1" result="shape"/>
     </filter>
   </defs>
 
-  <rect width="1280" height="640" fill="url(#bg)"/>
-  <circle cx="1110" cy="104" r="126" fill="#E8B66A" fill-opacity="0.18"/>
-  <circle cx="136" cy="544" r="146" fill="#B53A2D" fill-opacity="0.09"/>
-  <path d="M992 82C1058 125 1096 174 1102 230" stroke="#8B6A38" stroke-width="2.2" stroke-dasharray="8 10" opacity="0.45"/>
+  <rect width="1280" height="700" fill="url(#bg)"/>
+  <circle cx="1104" cy="116" r="124" fill="#E8B66A" fill-opacity="0.16"/>
+  <circle cx="130" cy="584" r="150" fill="#B53A2D" fill-opacity="0.08"/>
+  <path d="M985 86C1050 122 1090 166 1100 224" stroke="#8B6A38" stroke-width="2.2" stroke-dasharray="8 10" opacity="0.45"/>
 
-  <text x="170" y="96" fill="#231F1A" font-family="Georgia, 'Times New Roman', serif" font-size="50" font-weight="700">经济学复试文献双通道拆解器</text>
+  <text x="170" y="96" fill="#231F1A" font-family="Georgia, 'Times New Roman', serif" font-size="48" font-weight="700">经济学复试文献四通道拆解器</text>
 
   <g filter="url(#shadow)">
-    <rect x="170" y="140" width="940" height="340" rx="28" fill="url(#panel)"/>
+    <rect x="170" y="145" width="940" height="360" rx="28" fill="url(#panel)"/>
 
-    <rect x="520" y="184" width="240" height="84" rx="24" fill="#FBF7EF"/>
-    <text x="640" y="219" text-anchor="middle" fill="#8B6A38" font-family="Georgia, 'Times New Roman', serif" font-size="18" font-weight="700">SOURCE PAPER</text>
-    <text x="640" y="247" text-anchor="middle" fill="#2A2723" font-family="Georgia, 'Times New Roman', serif" font-size="28" font-weight="700">同一篇文献</text>
+    <rect x="470" y="184" width="340" height="112" rx="28" fill="#FBF7EF"/>
+    <text x="640" y="219" text-anchor="middle" fill="#8B6A38" font-family="Georgia, 'Times New Roman', serif" font-size="18" font-weight="700">FIXED CORE</text>
+    <text x="640" y="248" text-anchor="middle" fill="#2A2723" font-family="Georgia, 'Times New Roman', serif" font-size="26" font-weight="700">固定 5 模块</text>
+    <text x="640" y="278" text-anchor="middle" fill="#5C5448" font-family="Georgia, 'Times New Roman', serif" font-size="18">研究背景 · 研究问题 · 核心结论</text>
+    <text x="640" y="302" text-anchor="middle" fill="#5C5448" font-family="Georgia, 'Times New Roman', serif" font-size="18">机制分析 · 政策启示</text>
 
-    <path d="M640 270V304" stroke="#CD6A2C" stroke-width="8" stroke-linecap="round"/>
-    <path d="M640 304C640 322 620 332 598 338L468 372" stroke="#CD6A2C" stroke-width="8" stroke-linecap="round"/>
-    <path d="M640 304C640 322 660 332 682 338L812 372" stroke="#CD6A2C" stroke-width="8" stroke-linecap="round"/>
-    <path d="M471 363L455 375L475 381" stroke="#CD6A2C" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M809 363L825 375L805 381" stroke="#CD6A2C" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M640 296V324" stroke="#CD6A2C" stroke-width="7" stroke-linecap="round"/>
+    <path d="M640 324C640 344 612 354 582 362L380 394" stroke="#CD6A2C" stroke-width="7" stroke-linecap="round"/>
+    <path d="M640 324C640 344 668 354 698 362L900 394" stroke="#CD6A2C" stroke-width="7" stroke-linecap="round"/>
+    <path d="M640 324C640 344 624 360 612 386L556 438" stroke="#CD6A2C" stroke-width="7" stroke-linecap="round"/>
+    <path d="M640 324C640 344 656 360 668 386L724 438" stroke="#CD6A2C" stroke-width="7" stroke-linecap="round"/>
 
-    <rect x="214" y="308" width="310" height="124" rx="24" fill="#FFFFFF"/>
-    <rect x="756" y="308" width="310" height="124" rx="24" fill="#FFFFFF"/>
+    <rect x="220" y="382" width="242" height="92" rx="20" fill="#FFFFFF"/>
+    <rect x="820" y="382" width="242" height="92" rx="20" fill="#FFFFFF"/>
+    <rect x="492" y="430" width="296" height="92" rx="20" fill="#FFFFFF"/>
 
-    <rect x="240" y="332" width="108" height="34" rx="17" fill="#B53A2D" fill-opacity="0.12"/>
-    <text x="294" y="355" text-anchor="middle" fill="#8F2C22" font-family="Georgia, 'Times New Roman', serif" font-size="18" font-weight="700">INTERVIEW</text>
-    <text x="240" y="398" fill="#2A2723" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-weight="700">面试版</text>
-    <text x="240" y="430" fill="#564F45" font-family="Georgia, 'Times New Roman', serif" font-size="22">研究背景 · 机制解释 · 导师追问</text>
-    <text x="240" y="458" fill="#564F45" font-family="Georgia, 'Times New Roman', serif" font-size="22">口头表达 · 政策启示 · 延伸方向</text>
+    <rect x="248" y="402" width="118" height="28" rx="14" fill="#B53A2D" fill-opacity="0.12"/>
+    <text x="307" y="421" text-anchor="middle" fill="#8F2C22" font-family="Georgia, 'Times New Roman', serif" font-size="15" font-weight="700">GENERAL</text>
+    <text x="248" y="451" fill="#2A2723" font-family="Georgia, 'Times New Roman', serif" font-size="26" font-weight="700">综合面试</text>
+    <text x="248" y="474" fill="#564F45" font-family="Georgia, 'Times New Roman', serif" font-size="16">中文口头问答 · 导师追问</text>
 
-    <rect x="782" y="332" width="100" height="34" rx="17" fill="#D98324" fill-opacity="0.16"/>
-    <text x="832" y="355" text-anchor="middle" fill="#A55C15" font-family="Georgia, 'Times New Roman', serif" font-size="18" font-weight="700">WRITTEN</text>
-    <text x="782" y="398" fill="#2A2723" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-weight="700">笔试版</text>
-    <text x="782" y="430" fill="#564F45" font-family="Georgia, 'Times New Roman', serif" font-size="22">概念定义 · 理论脉络 · 机制链条</text>
-    <text x="782" y="458" fill="#564F45" font-family="Georgia, 'Times New Roman', serif" font-size="22">规范表述 · 高频术语 · 可背诵知识块</text>
+    <rect x="850" y="402" width="118" height="28" rx="14" fill="#D98324" fill-opacity="0.16"/>
+    <text x="909" y="421" text-anchor="middle" fill="#A55C15" font-family="Georgia, 'Times New Roman', serif" font-size="15" font-weight="700">ENGLISH</text>
+    <text x="850" y="451" fill="#2A2723" font-family="Georgia, 'Times New Roman', serif" font-size="26" font-weight="700">英文面试</text>
+    <text x="850" y="474" fill="#564F45" font-family="Georgia, 'Times New Roman', serif" font-size="16">专业口试英语 · 非直译表达</text>
+
+    <rect x="520" y="450" width="132" height="28" rx="14" fill="#6A8C58" fill-opacity="0.14"/>
+    <text x="586" y="469" text-anchor="middle" fill="#4E6A3D" font-family="Georgia, 'Times New Roman', serif" font-size="15" font-weight="700">WRITTEN CN</text>
+    <text x="520" y="499" fill="#2A2723" font-family="Georgia, 'Times New Roman', serif" font-size="24" font-weight="700">专业课笔试</text>
+    <text x="520" y="521" fill="#564F45" font-family="Georgia, 'Times New Roman', serif" font-size="16">规范卷面答案 · 逻辑清晰</text>
+
+    <rect x="670" y="450" width="132" height="28" rx="14" fill="#4A749F" fill-opacity="0.14"/>
+    <text x="736" y="469" text-anchor="middle" fill="#32597E" font-family="Georgia, 'Times New Roman', serif" font-size="15" font-weight="700">WRITTEN EN</text>
+    <text x="670" y="499" fill="#2A2723" font-family="Georgia, 'Times New Roman', serif" font-size="24" font-weight="700">英文笔试</text>
+    <text x="670" y="521" fill="#564F45" font-family="Georgia, 'Times New Roman', serif" font-size="16">英文短答与分析题</text>
   </g>
 
-  <text x="170" y="548" fill="#4F493F" font-family="Georgia, 'Times New Roman', serif" font-size="28">不是总结论文，而是让同一篇文献同时生成两套复试答案。</text>
-  <text x="170" y="584" fill="#6D6558" font-family="Georgia, 'Times New Roman', serif" font-size="22">One paper, two parallel retest outputs in strict JSON.</text>
+  <text x="170" y="590" fill="#4F493F" font-family="Georgia, 'Times New Roman', serif" font-size="28">不是总结论文，而是把同一篇文献稳定拆成固定 5 模块和四个复试通道。</text>
+  <text x="170" y="626" fill="#6D6558" font-family="Georgia, 'Times New Roman', serif" font-size="22">One paper, one fixed backbone, four retest channels, and standardized JSON plus Excel outputs.</text>
 </svg>
